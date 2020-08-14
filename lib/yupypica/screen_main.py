@@ -4,8 +4,8 @@ class ScreenMain(object):
     def __init__(self):
         self.title = urwid.CENTER(urwid.Text('Main'))
         self.meun = urwid.
-    self.version = urwid.Padding(urwid.Text('v0.0', align='right'), right=1)
-    self.header = urwid.AttrMap(urwid.Columns([self.app_name, self.version]), 'header')
+        self.version = urwid.Padding(urwid.Text('v0.0', align='right'), right=1)
+        self.header = urwid.AttrMap(urwid.Columns([self.app_name, self.version]), 'header')
 
     choices = u'Chapman Cleese Gilliam Idle Jones Palin'.split()
 

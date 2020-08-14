@@ -9,8 +9,8 @@ class Application (object):
         self.conf = saturnv.AppConf(defaults=Application.default_conf)
         self.buttons = {
             "A":Button(17,"Green"),
-            "B": Button(22, "Yellow"),
-            "C": Button(23, "Blue"),
+            "B": Button(22, "Blue"),
+            "C": Button(23, "Yellow"),
             "D": Button(27, "Red"),
         }
         self.display = Display()
