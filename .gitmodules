@@ -1,0 +1,3 @@
+[submodule "lib/saturnv"]
+	path = lib/saturnv
+	url = https://gitlab.com/AppliedNeuralNetworks/saturnv.git
