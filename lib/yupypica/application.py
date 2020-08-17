@@ -28,27 +28,8 @@ class Application (object):
 
         for i in range(button_count):
             b = Button(conf["button_pins"][i],conf["button_colors"][i])
-            self.display.add_to_palette(i, b.color)
-            # self.display.add_button_callback(b.callback)
-
-        # for b in buttons:
-            # print ("press the %s button" % b.color)
-            # b.button.wait_for_active()
-            # print(b.color)
-            # self.display.add_button_callback()
-
-        # self.display.add_button_callback(Button(conf["button_pins"][0],conf["button_colors"][0]))
-
-        # def button_callback(channel):
-        #     print("Button was pushed!")
-        #
-        #
-        # button_loop = asyncio.new_event_loop()
-        # asyncio.set_event_loop(button_loop)
-
-        # self.display = Display(button_loop)
-
-
+            b.button.when_activated = self.display.click
+            self.display.add_button(b)
 
     def run(self):
         self.display.start()

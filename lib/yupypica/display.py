@@ -13,6 +13,7 @@ class Display(object):
     palette = []
 
     def __init__(self, event_loop):
+        self.button_callbacks = []
         header = self._init_header()
         footer = self._init_footer()
         self.main_box = urwid.Filler(
@@ -28,19 +29,13 @@ class Display(object):
 
         self.main_loop = urwid.MainLoop(
             widget=self.frame,
-            palette=self.palette,
-            unhandled_input=self.exit_on_q,
             event_loop=urwid.AsyncioEventLoop(loop=event_loop)
         )
-        # self.main_loop.screen.set_terminal_properties(colors=256)
 
-        self.button_callbacks = []
-
-    def add_to_palette(self, idx, color):
-        self.palette.append((idx, '', '', '', 'black', color))
-
-    def add_button_callback(self, func):
-        self.button_callbacks.append(func)
+    def add_button(self, button):
+        button_idx = len(self.button_callbacks)
+        self.palette.append((button_idx, '', '', '', 'black', button.color))
+        self.button_callbacks.append(None)
 
     def _init_header(self):
         self.title = urwid.Text("initial title", align='left')
@@ -68,7 +63,3 @@ class Display(object):
         self.main_loop.screen.register_palette(self.palette)
         self.main_loop.set_alarm_at(int(time.time()) + 2, self.update_clock)
         self.main_loop.run()
-
-    def exit_on_q(self, key):
-        if key in ('q', 'Q'):
-            raise urwid.ExitMainLoop()

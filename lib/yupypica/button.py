@@ -3,10 +3,16 @@ import gpiozero
 
 class Button(object):
     def __init__(self, pin, color):
+        __whenActiveCallback = None
+
         self.color = color
         self.button = gpiozero.Button(pin)
         if self.button.is_active:
             raise(RuntimeError("%s button appears to be stuck" % color))
+
+    async def whenActive(self):
+        await self.__whenActiveCallback()
+
 
 class ButtonHandler(object):
     __whenButtonCallback = None
