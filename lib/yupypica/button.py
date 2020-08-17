@@ -8,27 +8,26 @@ class Button(object):
         if self.button.is_active:
             raise(RuntimeError("%s button appears to be stuck" % color))
 
-# class ButtonHandler(object):
-#     __whenButtonCallback = None
-#
-#     def __init__(self, pin, color, whenButtonCallback):
-#         # whenButtonCallback is an async function
-#         self.__whenButtonCallback = whenButtonCallback
-#         self.color = color
-#
-#         # Just init the sensor with gpiozero lib
-#         button = gzbutton(pin)
-#
-#         # Method to call when button is activated
-#         button.when_activated = self.whenButtonActive
-#
-#     def whenButtonActive(self):
-#         # Create new asyncio loop
-#         loop = asyncio.new_event_loop()
-#         asyncio.set_event_loop(loop)
-#         future = asyncio.ensure_future(self.__executeWhenButtonCallback()) # Execute async method
-#         loop.run_until_complete(future)
-#         loop.close()
-#
-#     async def __executeWhenButtonCallback(self):
-#         await self.__whenButtonCallback()
+class ButtonHandler(object):
+    def __init__(self, pin, color, whenButtonCallback):
+        # whenButtonCallback is an async function
+        self.__whenButtonCallback = whenButtonCallback
+        self.color = color
+
+        # Just init the sensor with gpiozero lib
+        button = gpiozero.Button(pin)
+
+        # Method to call when button is activated
+        button.when_activated = self.whenButtonActive
+        return self.__whenButtonCallback
+
+    def whenButtonActive(self):
+        # Create new asyncio loop
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        future = asyncio.ensure_future(self.__executeWhenButtonCallback()) # Execute async method
+        loop.run_until_complete(future)
+        loop.close()
+
+    async def __executeWhenButtonCallback(self):
+        await self.__whenButtonCallback()

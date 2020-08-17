@@ -7,6 +7,7 @@ class Application (object):
     default_conf = {
         "button_colors": ["Green", "Blue", "Yellow", "Red"],
         "button_pins": [17,22,23,27],
+        "tz":"utc"
     }
 
     def __init__(self):
@@ -21,20 +22,13 @@ class Application (object):
             Button(conf["button_pins"][3],conf["button_colors"][3]),
         ]
 
-        for b in buttons:
-            print ("press the %s button" % b.color)
-            b.button.wait_for_active()
-            print(b.color)
+        # for b in buttons:
+            # print ("press the %s button" % b.color)
+            # b.button.wait_for_active()
+            # print(b.color)
+            # self.display.add_button_callback()
 
-        # print ("press each button:")
-        # buttons["A"].button.wait_for_active()
-        # print("A")
-        # buttons["B"].button.wait_for_active()
-        # print("B")
-        # buttons["C"].button.wait_for_active()
-        # print("C")
-        # buttons["D"].button.wait_for_active()
-        # print("D")
+        self.display.add_button_callback(Button(conf["button_pins"][0],conf["button_colors"][0]))
 
         # def button_callback(channel):
         #     print("Button was pushed!")
@@ -49,3 +43,7 @@ class Application (object):
 
     def run(self):
         self.display.start()
+
+    def RedButton(self):
+        self.display.set_title("red")
+
