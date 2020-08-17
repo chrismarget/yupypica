@@ -9,6 +9,8 @@ class Button(object):
             raise(RuntimeError("%s button appears to be stuck" % color))
 
 class ButtonHandler(object):
+    __whenButtonCallback = None
+
     def __init__(self, pin, color, whenButtonCallback):
         # whenButtonCallback is an async function
         self.__whenButtonCallback = whenButtonCallback
@@ -19,7 +21,6 @@ class ButtonHandler(object):
 
         # Method to call when button is activated
         button.when_activated = self.whenButtonActive
-        return self.__whenButtonCallback
 
     def whenButtonActive(self):
         # Create new asyncio loop

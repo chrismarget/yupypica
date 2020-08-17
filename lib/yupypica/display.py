@@ -9,40 +9,19 @@ def now():
     return datetime.datetime.now(pytz.utc).strftime('%Y-%m-%d-%H:%M:%S%z')
 
 
-class Display (object):
-    palette = [
-        # (name, foreground, background, mono, foreground_high, background_hi)
-        # -or-
-        # (name, like_other_name)
-        ('rev_red', '', '', '', 'black', '#700'),
-        ('rev_green', '', '', '', 'black', '#070'),
-        ('rev_yellow', '', '', '', 'black', '#770'),
-        ('rev_blue', '', '', '', 'black', '#007'),
-        # ('rev_green', '', '', '', 'black', 'light_green'),
-        # ('rev_yellow', '', '', '', 'black', 'light_yellow'),
-        # ('rev_blue', '', '', '', 'black', 'light_blue'),
-        ('background', '', '', '', 'g15', 'g11'),
-        ('header', '', '', '', '#006', '#fd0'),
-        ('footer', '', '', '', 'g70', 'g23'),
-        ('listbox', '', '', '', 'g58', 'g23'),
-        ('listbox2', '', '', '', '#66f', 'g23'),
-        ('listempty', '', '', '', 'g46', 'g23'),
-        ('listtitle', '', '', '', '#a60', 'g15'),
-        ('listitem', '', '', '', '#0d6', 'g23'),
-        ('listbutton', '', '', '', '#fa0', '#066'),
-    ]
-
+class Display(object):
+    palette = []
 
     def __init__(self, event_loop):
-
         header = self._init_header()
         footer = self._init_footer()
-        # self.main_box = urwid.Filler(urwid.AttrMap(urwid.Text("text in MainBox", align='center'), "lbx2"))
-        # self.main_box = urwid.AttrMap(urwid.Filler(urwid.Text("rev_red", "text in MainBox", align='center')),"listbox2")
         self.main_box = urwid.Filler(
-            urwid.Text(
-                ('rev_blue', "text in MainBox"),
-                align='center',
+            urwid.Pile([
+                urwid.Text((0, "text"), align='center'),
+                urwid.Text((1, "text"), align='center'),
+                urwid.Text((2, "text"), align='center'),
+                urwid.Text((3, "text"), align='center'),
+            ]
             )
         )
         self.frame = urwid.Frame(self.main_box, header, footer)
@@ -53,9 +32,12 @@ class Display (object):
             unhandled_input=self.exit_on_q,
             event_loop=urwid.AsyncioEventLoop(loop=event_loop)
         )
-        self.main_loop.screen.set_terminal_properties(colors=256)
+        # self.main_loop.screen.set_terminal_properties(colors=256)
 
         self.button_callbacks = []
+
+    def add_to_palette(self, idx, color):
+        self.palette.append((idx, '', '', '', 'black', color))
 
     def add_button_callback(self, func):
         self.button_callbacks.append(func)
@@ -81,13 +63,12 @@ class Display (object):
         self.main_loop.set_alarm_at(round(time.time()) + 1, self.update_clock)
 
     def start(self):
+        print("callbacks:" + str(len(self.button_callbacks)))
+        self.main_loop.screen.set_terminal_properties(colors=256)
+        self.main_loop.screen.register_palette(self.palette)
         self.main_loop.set_alarm_at(int(time.time()) + 2, self.update_clock)
         self.main_loop.run()
 
     def exit_on_q(self, key):
         if key in ('q', 'Q'):
             raise urwid.ExitMainLoop()
-
-
-
-
