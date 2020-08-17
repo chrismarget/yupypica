@@ -28,8 +28,12 @@ class Application (object):
 
         for i in range(button_count):
             b = Button(conf["button_pins"][i],conf["button_colors"][i])
-            b.button.when_activated = self.display.click
+            b.button.when_activated = self.callback
             self.display.add_button(b)
+
+    def callback(self):
+        print(str([7]))
+        self.display.lines[0].set_text((0, "XXXXX"), align='center')
 
     def run(self):
         self.display.start()

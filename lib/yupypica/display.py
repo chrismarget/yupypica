@@ -16,13 +16,14 @@ class Display(object):
         self.button_callbacks = []
         header = self._init_header()
         footer = self._init_footer()
+        self.lines = [
+            urwid.Text((0, "button"), align='center'),
+            urwid.Text((1, "button"), align='center'),
+            urwid.Text((2, "button"), align='center'),
+            urwid.Text((3, "button"), align='center'),
+        ]
         self.main_box = urwid.Filler(
-            urwid.Pile([
-                urwid.Text((0, "text"), align='center'),
-                urwid.Text((1, "text"), align='center'),
-                urwid.Text((2, "text"), align='center'),
-                urwid.Text((3, "text"), align='center'),
-            ]
+            urwid.Pile(self.lines
             )
         )
         self.frame = urwid.Frame(self.main_box, header, footer)
