@@ -9,17 +9,17 @@ def now():
     return datetime.datetime.now(pytz.utc).strftime('%Y-%m-%d-%H:%M:%S%z')
 
 class Display (object):
-    def __init__(self, loop):
+    def __init__(self, event_loop):
 
         header = self._init_header()
         footer = self._init_footer()
         self.main_box = urwid.Filler(urwid.Text("text in MainBox", align='center'))
         self.frame = urwid.Frame(self.main_box, header, footer)
 
-        self.loop = urwid.MainLoop(
+        self.main_loop = urwid.MainLoop(
             self.frame,
             unhandled_input=self.exit_on_q,
-            event_loop=urwid.AsyncioEventLoop(loop=loop)
+            event_loop=urwid.AsyncioEventLoop(loop=event_loop)
         )
 
     def _init_header(self):
@@ -40,11 +40,11 @@ class Display (object):
 
     def update_clock(self, loop, data):
         self.clock.set_text(now())
-        self.loop.set_alarm_at(round(time.time()) + 1, self.update_clock)
+        self.main_loop.set_alarm_at(round(time.time()) + 1, self.update_clock)
 
     def start(self):
-        self.loop.set_alarm_at(int(time.time()) + 2, self.update_clock)
-        self.loop.run()
+        self.main_loop.set_alarm_at(int(time.time()) + 2, self.update_clock)
+        self.main_loop.run()
 
     def exit_on_q(self, key):
         if key in ('q', 'Q'):
