@@ -27,11 +27,10 @@ class Application(object):
         loop = asyncio.get_event_loop()
         self.display = Display(loop)
 
-        b = []
         for i in range(button_count):
-            b.append(Button(conf["button_pins"][i], conf["button_colors"][i], loop, self.__callback))
-            b[i].button.when_activated = self.__callback
-            self.display.add_button(b[i])
+            b = (Button(conf["button_pins"][i], conf["button_colors"][i], loop))
+            b.button.when_activated = self.__callback
+            self.display.add_button(b)
 
     def __callback(self, b):
         self.display.populate_frame()
