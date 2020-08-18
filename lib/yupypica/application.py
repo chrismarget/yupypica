@@ -1,16 +1,6 @@
 import saturnv
 
 
-class Application(object):
-    default_conf = {}
-
-    def __init__(self):
-        conf = saturnv.AppConf(defaults=Application.default_conf)
-
-    def run(self):
-        print("run")
-
-
 def is_linux():
     import platform
 
@@ -36,3 +26,14 @@ if is_pi():
     print("this is a pi - doing import")
     import uinput
     import RPi.GPIO
+
+
+class Application(object):
+    default_conf = {}
+
+    def __init__(self):
+        conf = saturnv.AppConf(defaults=Application.default_conf)
+
+    def run(self):
+        print("run")
+
