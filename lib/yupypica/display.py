@@ -9,8 +9,9 @@ import urwid
 
 
 def now():
-    tz=pytz.utc
+    tz = pytz.utc
     return datetime.datetime.now(tz=tz).strftime('%Y-%m-%d-%H:%M:%S%z')
+
 
 class Display(object):
     palette = []
@@ -19,12 +20,6 @@ class Display(object):
         self.button_callbacks = []
         header = self._init_header()
         footer = self._init_footer()
-        self.lines = [
-            urwid.Text((0, "button"), align='center'),
-            urwid.Text((1, "button"), align='center'),
-            urwid.Text((2, "button"), align='center'),
-            urwid.Text((3, "button"), align='center'),
-        ]
 
         self.main_box = urwid.Filler(
             Welcome()
@@ -64,14 +59,13 @@ class Display(object):
         self.clock.set_text(now())
         self.main_loop.set_alarm_at(round(time.time()) + 1, self.update_clock)
 
-    def populate_frame(self, loop, data):
-        # self.main_box.set_body(urwid.Pile(self.lines))
-        self.main_box.set_body(Lines(selected=random.randint(-1,3)))
-        self.main_loop.set_alarm_in(2, self.populate_frame)
+    def populate_frame(self, loop=None, data=None):
+        self.main_box.set_body(Lines(selected=random.randint(-1, 3)))
+        # self.main_loop.set_alarm_in(5, self.populate_frame)
 
     def start(self):
         self.main_loop.screen.set_terminal_properties(colors=256)
         self.main_loop.screen.register_palette(self.palette)
         self.main_loop.set_alarm_at(int(time.time()) + 2, self.update_clock)
-        self.main_loop.set_alarm_in(3, self.populate_frame)
+        # self.main_loop.set_alarm_in(3, self.populate_frame)
         self.main_loop.run()
