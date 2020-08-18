@@ -15,9 +15,9 @@ def now():
 
 class Display(object):
     palette = []
+    button_count = 0
 
     def __init__(self, event_loop):
-        self.button_callbacks = []
         header = self._init_header()
         footer = self._init_footer()
 
@@ -27,17 +27,15 @@ class Display(object):
 
         self.frame = urwid.Frame(self.main_box, header, footer)
 
-        # self.main_box.set_body(urwid.Pile(self.lines))
-
         self.main_loop = urwid.MainLoop(
             widget=self.frame,
             event_loop=urwid.AsyncioEventLoop(loop=event_loop)
         )
 
     def add_button(self, button):
-        button_idx = len(self.button_callbacks)
-        self.palette.append((button_idx, '', '', '', 'black', button.color))
-        self.button_callbacks.append(None)
+        self.button_idx = self.button_count
+        self.button_count += 1
+        self.palette.append((self.button_idx, '', '', '', 'black', button.color))
 
     def _init_header(self):
         self.title = urwid.Text("initial title", align='left')
