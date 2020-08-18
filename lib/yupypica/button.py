@@ -2,15 +2,22 @@ import asyncio
 import gpiozero
 
 class Button(object):
-    def __init__(self, pin, color):
-        __whenActiveCallback = None
+    __whenActiveCallback = None
 
+    def __init__(self, pin, color, loop, whenActiveCallback):
+        self.__whenActiveCallback = whenActiveCallback
+        self.loop = loop
         self.color = color
         self.button = gpiozero.Button(pin)
         if self.button.is_active:
             raise(RuntimeError("%s button appears to be stuck" % color))
 
-    async def whenActive(self):
+    def whenActive(self):
+       # Create new asyncio loop
+       asyncio.set_event_loop(self.loop)
+       future = asyncio.ensure_future(self.__executeWhenActive())  # Execute async method
+
+    async def __whenActive(self):
         await self.__whenActiveCallback()
 
 

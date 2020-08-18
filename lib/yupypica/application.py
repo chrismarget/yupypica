@@ -27,17 +27,12 @@ class Application (object):
         self.display = Display(loop)
 
         for i in range(button_count):
-            b = Button(conf["button_pins"][i],conf["button_colors"][i])
+            b = Button(conf["button_pins"][i],conf["button_colors"][i], loop, self.callback)
             b.button.when_activated = self.callback
             self.display.add_button(b)
 
-    def callback(self):
-        print(str([7]))
-        self.display.lines[0].set_text((0, "XXXXX"), align='center')
+    def callback(self, b):
+        self.display.lines[0].set_text("XXXXX")
 
     def run(self):
         self.display.start()
-
-    def RedButton(self):
-        self.display.set_title("red")
-
