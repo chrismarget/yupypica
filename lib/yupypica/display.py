@@ -3,15 +3,16 @@ from .screen_lines import Lines
 import asyncio
 import random
 import datetime
-import pytz
+# import pytz
 import time
 import urwid
 import weakref
 
 
 def now():
-    tz = pytz.utc
-    return datetime.datetime.now(tz=tz).strftime("%Y-%m-%d-%H:%M:%S%z")
+    # tz = pytz.utc
+    # return datetime.datetime.now(tz=tz).strftime("%Y-%m-%d-%H:%M:%S%z")
+    return datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S%z")
 
 
 class Display(object):
