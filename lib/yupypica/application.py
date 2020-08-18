@@ -27,33 +27,8 @@ class Application(object):
         for i in range(button_count):
             pin = conf["button_pins"][i]
             color = conf["button_colors"][i]
-            # if i == 0:
-            #     b = Button(pin, color, self.__buttoncallback0)
-            #     self.display.add_button(b)
-            # elif i == 1:
-            #     b = Button(pin, color, self.__buttoncallback1)
-            #     self.display.add_button(b)
-            # elif i == 2:
-            #     b = Button(pin, color, self.__buttoncallback2)
-            #     self.display.add_button(b)
-            # elif i == 3:
-            #     b = Button(pin, color, self.__buttoncallback3)
-            #     self.display.add_button(b)
-
             b = Button(pin, color, self.__button_active_callback)
             self.display.add_button(b)
-
-    # def __buttoncallback0(self):
-    #     self.display.button_event(data=0)
-    #
-    # def __buttoncallback1(self):
-    #     self.display.button_event(data=1)
-    #
-    # def __buttoncallback2(self):
-    #     self.display.button_event(data=2)
-    #
-    # def __buttoncallback3(self):
-    #     self.display.button_event(data=3)
 
     def __button_active_callback(self, b):
         self.display.button_event(data=b)
