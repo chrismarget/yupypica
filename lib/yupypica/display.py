@@ -62,8 +62,7 @@ class Display(object):
         self.last += 1
 
     def button_event(self, loop=None, data=None):
-        # self.populate_frame(loop=loop, data=data)
-        self.populate_frame()
+        self.populate_frame(loop=loop, data=data)
         # raise (RuntimeError(data))
 
     def start(self):
