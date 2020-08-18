@@ -2,6 +2,7 @@ import saturnv
 
 
 def is_linux():
+    print ('check for linux')
     import platform
 
     if platform.system().lower() == "linux":
@@ -10,6 +11,7 @@ def is_linux():
 
 
 def is_pi():
+    print ('check for pi')
     if is_linux():
         try:
             with open("/proc/cpuinfo") as f:
