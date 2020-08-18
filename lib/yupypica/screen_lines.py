@@ -1,8 +1,8 @@
 import urwid
 
-def Lines(selected=-1):
+def Lines(count=0, selected=-1):
     lines = []
-    for i in range(4):
+    for i in range(count):
         if i == selected:
             lines.append(
                 urwid.Text((i, ">button<"), align='center')
@@ -12,11 +12,5 @@ def Lines(selected=-1):
                 urwid.Text((i, "button"), align='center')
             )
 
-    # lines = [
-    #     urwid.Text((0, "button"), align='center'),
-    #     urwid.Text((1, "button"), align='center'),
-    #     urwid.Text((2, "button"), align='center'),
-    #     urwid.Text((3, "button"), align='center'),
-    # ]
     return urwid.Pile(lines)
 

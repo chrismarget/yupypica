@@ -2,7 +2,6 @@ from .button import Button
 from .display import Display
 import asyncio
 import saturnv
-import time
 
 
 class Application(object):
@@ -16,10 +15,12 @@ class Application(object):
         conf = saturnv.AppConf(defaults=Application.default_conf)
         button_count = 4
 
-        # Sanity check button color count and button pin count
+        # Sanity check button color count
         bcc = len(conf["button_colors"])
         if bcc != button_count:
             raise (RuntimeError("configured with %d button_colors, expect %d" % (bcc, button_count)))
+
+        # Sanity check button pin count
         bpc = len(conf["button_pins"])
         if bpc != button_count:
             raise (RuntimeError("configured with %d button_pins, expect %d" % (bpc, button_count)))
@@ -28,11 +29,12 @@ class Application(object):
         self.display = Display(loop)
 
         for i in range(button_count):
-            b = (Button(conf["button_pins"][i], conf["button_colors"][i], loop))
-            b.button.when_activated = self.__callback
+            pin = conf["button_pins"][i]
+            color = conf["button_colors"][i]
+            b = Button(pin, color, self.__buttonactivecallback)
             self.display.add_button(b)
 
-    def __callback(self, b):
+    def __buttonactivecallback(self, b):
         self.display.populate_frame()
 
     def run(self):

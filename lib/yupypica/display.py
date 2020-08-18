@@ -16,6 +16,7 @@ def now():
 class Display(object):
     palette = []
     button_count = 0
+    last = 0
 
     def __init__(self, event_loop):
         header = self._init_header()
@@ -33,9 +34,8 @@ class Display(object):
         )
 
     def add_button(self, button):
-        self.button_idx = self.button_count
+        self.palette.append((self.button_count, '', '', '', 'black', button.color))
         self.button_count += 1
-        self.palette.append((self.button_idx, '', '', '', 'black', button.color))
 
     def _init_header(self):
         self.title = urwid.Text("initial title", align='left')
@@ -58,12 +58,12 @@ class Display(object):
         self.main_loop.set_alarm_at(round(time.time()) + 1, self.update_clock)
 
     def populate_frame(self, loop=None, data=None):
-        self.main_box.set_body(Lines(selected=random.randint(-1, 3)))
-        # self.main_loop.set_alarm_in(5, self.populate_frame)
+        self.main_box.set_body(Lines(count=self.button_count, selected=self.last % self.button_count))
+        self.last += 1
 
     def start(self):
         self.main_loop.screen.set_terminal_properties(colors=256)
         self.main_loop.screen.register_palette(self.palette)
         self.main_loop.set_alarm_at(int(time.time()) + 2, self.update_clock)
-        # self.main_loop.set_alarm_in(3, self.populate_frame)
+        self.main_loop.set_alarm_in(2, self.populate_frame)
         self.main_loop.run()
