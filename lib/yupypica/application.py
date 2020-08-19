@@ -1,29 +1,19 @@
 import os
+import platform
 import saturnv
 
 from .gpio_kb import keyboard
 
 
 def is_linux():
-    import platform
-
-    if platform.system().lower() == "linux":
-        return True
-    return False
-
+    return platform.system() == "Linux"
 
 def is_pi():
-    if is_linux():
-        try:
-            with open('/proc/cpuinfo') as f:
-                for line in f:
-                    if line.strip():
-                        k, v = line.split(":", 1)
-                        if k.strip().lower() == "model" and "raspberry pi" in v.lower():
-                            return True
-        except:
-            pass
-    return False
+    if not is_linux():
+        return False
+
+    return "Raspberry Pi" in open('/proc/cpuinfo').read()
+
 
 class Application(object):
     default_conf = {}
@@ -32,21 +22,21 @@ class Application(object):
         conf = saturnv.AppConf(defaults=Application.default_conf)
 
         print("Application init")
-        if is_pi():
-            print("this is a pi")
-            if os.fork(): # child
-                c = open("/tmp/child", "a")
-                c.write("child")
-                c.close()
-                print("child starts keyboard")
-                keyboard()
-            else:
-                p = open("/tmp/parent", "a")
-                p.write("parent")
-                p.close()
-                print("parent continues normally")
+        if not is_pi():
+            print("This isn't a Raspberry Pi")
+
+        # TODO: Use subprocess module for this instead
+        if os.fork(): # child
+            c = open("/tmp/child", "a")
+            c.write("child")
+            c.close()
+            print("child starts keyboard")
+            keyboard()
         else:
-            print("this is not a pi")
+            p = open("/tmp/parent", "a")
+            p.write("parent")
+            p.close()
+            print("parent continues normally")
 
     def run(self):
         print("run")
