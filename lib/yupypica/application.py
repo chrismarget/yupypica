@@ -1,8 +1,10 @@
+import os
 import saturnv
+
+from .gpio_kb import keyboard
 
 
 def is_linux():
-    print ('check for linux')
     import platform
 
     if platform.system().lower() == "linux":
@@ -11,7 +13,6 @@ def is_linux():
 
 
 def is_pi():
-    print ('check for pi')
     if is_linux():
         try:
             with open("/proc/cpuinfo") as f:
@@ -23,18 +24,17 @@ def is_pi():
             pass
         return False
 
-
-if is_pi():
-    print("this is a pi - doing import")
-    import uinput
-    import RPi.GPIO
-
-
 class Application(object):
     default_conf = {}
 
     def __init__(self):
         conf = saturnv.AppConf(defaults=Application.default_conf)
+        if is_pi():
+            if os.fork(): # child
+                print ("child starts keyboard")
+                keyboard()
+            else:
+                print ("parent continues normally")
 
     def run(self):
         print("run")
