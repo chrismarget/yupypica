@@ -26,9 +26,10 @@ def is_pi():
 
 class Application(object):
     default_conf = {}
-    conf = saturnv.AppConf(defaults=Application.default_conf)
 
     def __init__(self):
+        conf = saturnv.AppConf(defaults=Application.default_conf)
+        
         print("application init")
         if is_pi():
             if os.fork(): # child
