@@ -1,3 +1,6 @@
+import sys
+from os.path import basename
+import copy
 import pytz
 import asyncio
 import saturnv
@@ -17,16 +20,17 @@ class Application(object):
             # (name, foreground, background, mono, foreground_high, background_hi)
             # -or-
             # (name, like_other_name)
-            ('background',  '', '', '', 'g15',  'g11'),
-            ('header',      '', '', '', '#006', '#fd0'),
-            ('footer',      '', '', '', 'g70',  'g23'),
-            #('listbox',    '', '', '', '#0d6',  'g23'),
-            ('listbox',     '', '', '', 'g58',  'g23'),
-            ('listbox2',    '', '', '', '#66f',  'g23'),
-            ('listempty',   '', '', '', 'g46',  'g23'),
-            ('listtitle',   '', '', '', '#a60',  'g15'),
-            ('listitem',    '', '', '', '#0d6',  'g23'),
-            ('listbutton',  '', '', '', '#fa0',  '#066'),
+            ('background',  '', '', '', 'white',  'light gray'),
+
+            ('logo',  '', '', '', 'black',  'light gray'),
+
+            ('header',      '', '', '', 'white', 'light blue'),
+            ('app_name',    '', '', '', 'white', 'light blue'),
+            ('screen_name', '', '', '', 'white',  'dark blue'),
+
+            ('footer',      '', '', '', 'white', 'dark blue'),
+            ('clock',    '', '', '', 'white', 'dark blue'),
+            ('status', '', '', '', 'white',  'dark blue'),
         ],
 
         'button_colors': ['#070', '#44f', '#770', '#700'],
@@ -35,6 +39,7 @@ class Application(object):
     }
 
     def __init__(self):
+        self.name = basename(sys.argv[0])
         self.tz = pytz.utc
 
         self.log = saturnv.Logger()
@@ -61,7 +66,9 @@ class Application(object):
 #            b = Button(pin, color, self.__button_active_callback)
 #            self.display.add_button(b)
 
-        self.loop = asyncio.get_event_loop()
+        self.palette = copy.deepcopy(self.default_conf['palette'])
+        self.asyncio_loop = asyncio.get_event_loop()
+
         self.display = Display(self)
 
 
