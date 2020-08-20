@@ -8,6 +8,7 @@ import weakref
 
 from .screen_welcome import Welcome
 from .screen_lines import Lines
+from yupypica.screen import Splash
 
 
 class Display(object):
@@ -20,7 +21,7 @@ class Display(object):
 
         header = self._init_header()
         footer = self._init_footer()
-        self.main_box = urwid.Filler(Welcome())
+        self.main_box = urwid.Filler(urwid.Text(''))
         self.frame = urwid.AttrMap(urwid.Frame(self.main_box, header, footer), 'background')
 
         self.main_loop = urwid.MainLoop(
@@ -28,6 +29,8 @@ class Display(object):
             event_loop=urwid.AsyncioEventLoop(loop=self.app.asyncio_loop),
             unhandled_input=self.unhandled_input,
         )
+        self.main_loop.screen.set_terminal_properties(colors=88)
+        self.main_loop.screen.register_palette(self.app.conf['palette'])
 
     def unhandled_input(self, key):
         raise urwid.ExitMainLoop()
@@ -47,23 +50,17 @@ class Display(object):
 
     def _init_footer(self):
         self.clock = urwid.Text("")
-        self.status = urwid.Text("Idle")
+        self.status = urwid.Text("Idle", align='right')
         return urwid.AttrMap(urwid.Columns([
             urwid.AttrMap(self.clock, 'clock'),
             urwid.AttrMap(self.status, 'status'),
             ]), 'footer')
 
-    def logo(self):
-        return ["                         o          ",
-                ",   ..   .,---.,   .,---..,---.,---.",
-                "|   ||   ||   ||   ||   |||    ,---|",
-                "`---|`---'|---'`---||---'``---'`---^",
-                "`---'     |    `---'|               ",
-                ]
-
-
     def set_screen_name(self, screen_name):
         self.screen_name.set_text(screen_name)
+
+    def set_status(self, status):
+        self.status.set_text(status)
 
     def update_clock(self, loop=None, data=None):
         now = datetime.datetime.now(tz=self.app.tz)
@@ -72,30 +69,14 @@ class Display(object):
         next_second = math.ceil(time.time())
         self.main_loop.set_alarm_at(next_second, self.update_clock)
 
-    def populate_frame(self, loop=None, data=None):
-        self.main_box.set_body(
-                urwid.AttrMap(
-                    urwid.Pile([
-                        urwid.Text("                              o            ", align='center'),
-                        urwid.Text(",   . .   . ,---. ,   . ,---. . ,---. ,---.", align='center'),
-                        urwid.Text("|   | |   | |   | |   | |   | | |     ,---|", align='center'),
-                        urwid.Text("`---| `---' |---' `---| |---' ` `---' `---^", align='center'),
-                        urwid.Text("`---'       |     `---' |                  ", align='center'),
-                        urwid.Text("", align='center'),
-                        urwid.Text("Stand-alone Certificate Authority", align='center'),
-                        urwid.Text("v 1.0.7", align='center'),
-                    ]),
-                'logo')
-                #Lines(count=self.button_count, selected=self.last % self.button_count)
-        )
-        self.last += 1
+    def set_body(self, body):
+        self.main_box.set_body(body)
 
-    def button_event(self, loop=None, data=None):
-        self.populate_frame(loop=loop, data=data)
+#    def button_event(self, loop=None, data=None):
+#        self.populate_frame(loop=loop, data=data)
 
     def start(self):
-        self.main_loop.screen.set_terminal_properties(colors=88)
-        self.main_loop.screen.register_palette(self.app.conf['palette'])
         self.update_clock()
-        self.main_loop.set_alarm_in(2, self.populate_frame)
+        Splash(self.app).activate()
+        #self.main_loop.set_alarm_in(2, self.populate_frame)
         self.main_loop.run()

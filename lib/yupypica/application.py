@@ -15,14 +15,14 @@ button_count = 4
 class Application(object):
     default_conf = {
         'log_level': 'warning',
-        'clock_format': '%Y-%m-%d-%H:%M:%S%z',
+        'clock_format': '%Y-%m-%d %H:%M:%S %Z',
         'palette': [
             # (name, foreground, background, mono, foreground_high, background_hi)
             # -or-
             # (name, like_other_name)
             ('background',  '', '', '', 'white',  'light gray'),
 
-            ('logo',  '', '', '', 'black',  'light gray'),
+            ('logo',  '', '', '', 'dark blue',  'light gray'),
 
             ('header',      '', '', '', 'white', 'light blue'),
             ('app_name',    '', '', '', 'white', 'light blue'),
@@ -41,6 +41,7 @@ class Application(object):
     def __init__(self):
         self.name = basename(sys.argv[0])
         self.tz = pytz.utc
+        self.acceptor = self._accept_input
 
         self.log = saturnv.Logger()
         self.log.set_level(self.default_conf['log_level'])  # from defaults
@@ -71,6 +72,16 @@ class Application(object):
 
         self.display = Display(self)
 
+    def accept_input(self, key):
+        self.acceptor(key)
+
+    def set_acceptor(self, acceptor):
+        self.acceptor = self._accept_input
+
+    def _accept_input(self, key):
+        if key.lower() == 'q':
+            raise urwid.ExitMainLoop()
+
 
     def __button_active_callback(self, b):
         self.display.button_event(data=b)
@@ -94,6 +105,7 @@ def check_config_element(name, count, element):
         raise (RuntimeError("%s has %d elements, expected %d" % (name, counted, count)))
 
     # count unique items
+    #-->  counted = len(set(element))   # Instead, use "set" to uniquify
     d = {}
     for i in element:
         d[i] = None
