@@ -40,4 +40,3 @@ class Application(object):
 
     def run(self):
         print("run")
-
