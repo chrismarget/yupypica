@@ -134,11 +134,13 @@ def check_config(count, conf):
 
 def check_config_element(name, count, element):
     # check overall length
-    if count != len(element):
+    counted = len(element)
+    if count != counted:
         raise (RuntimeError("%s has %d elements, expected %d" % (name, counted, count)))
 
     # count unique items
-    if count != len(set(element)):   # Instead, use "set" to uniquify
+    counted = len(set(element))
+    if count != counted:
         raise (
             RuntimeError(
                 "%s has %d unique elements, expected %d" % (name, counted, count)
