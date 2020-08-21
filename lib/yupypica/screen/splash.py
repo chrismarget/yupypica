@@ -15,7 +15,7 @@ class Splash(Screen):
     ]
 
     def __init__(self, app):
-        super(Splash, self).__init__(app)
+        super().__init__(app)
 
     def set_screen_name(self):
         self.app.display.set_screen_name("Welcome")
