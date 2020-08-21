@@ -2,9 +2,9 @@
 import sys
 import os
 from os.path import basename
-import pytz
 import asyncio
 import saturnv
+from dateutil import tz
 from urwid import AsyncioEventLoop, MainLoop, ExitMainLoop, Filler, Text
 
 from .button import Button
@@ -22,6 +22,7 @@ class Application(object):
     default_conf = {
         'log_level': 'warning',
         'clock_format': '%Y-%m-%d %H:%M:%S %Z',
+        'clock_timezone': 'utc',
         'theme': {
             # name:         [foreground, background]
             'background':   ['white', 'light gray'],
@@ -38,12 +39,10 @@ class Application(object):
 
         'button_colors': ['#070', '#44f', '#770', '#700'],
         'button_pins': [17, 22, 23, 27],
-        'tz': 'utc',
     }
 
     def __init__(self):
         self.name = basename(sys.argv[0])
-        self.tz = pytz.utc
         self.acceptor = self._accept_input
 
         self.log = saturnv.Logger()
@@ -54,6 +53,7 @@ class Application(object):
         self.options = Options(self)
         self.args = self.options.get_args()
         self.conf = saturnv.AppConf(defaults=Application.default_conf, args=self.args)
+        self.tz = tz.gettz(self.conf['clock_timezone'])
 
         self.log.set_level(self.conf['log_level'])  # from final config
 
