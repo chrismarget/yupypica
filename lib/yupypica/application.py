@@ -48,9 +48,9 @@ class Application(object):
         self.name = basename(sys.argv[0])
         self.acceptor = self._accept_input
 
-#        self.log = saturnv.Logger()
-#        self.log.set_level(self.default_conf['log_level'])  # from defaults
-#        self.log.stderr_off() # don't disturb screen layout
+        self.log = saturnv.Logger()
+        self.log.set_level(self.default_conf['log_level'])  # from defaults
+        self.log.stderr_off() # don't disturb screen layout
 
         # Parse command line arguments, and get the app configuration
         self.options = Options(self)
@@ -58,7 +58,7 @@ class Application(object):
         self.conf = saturnv.AppConf(defaults=Application.default_conf, args=self.args)
         self.tz = tz.gettz(self.conf['clock_timezone'])
 
-#        self.log.set_level(self.conf['log_level'])  # from final config
+        self.log.set_level(self.conf['log_level'])  # from final config
 
 #        try:
 #            check_config(button_count, self.conf)
