@@ -34,7 +34,7 @@ class Display(object):
         return palette
 
     def unhandled_input(self, key):
-        raise urwid.ExitMainLoop()
+        raise ExitMainLoop()
 
     def add_button(self, button):
         self.palette.append((self.button_count, "", "", "", "black", button.color))
