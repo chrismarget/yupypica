@@ -41,7 +41,7 @@ class Application(object):
 
         'button_colors': ['#070', '#44f', '#770', '#700'],
         'button_pins': [17, 22, 23, 27],
-        'button_keys': ['KEY_A', 'KEY_B', 'KEY_C', 'KEY_D'],
+        'button_keys': ['KEY_1', 'KEY_Q', 'KEY_A', 'KEY_Z'],
     }
 
     def __init__(self):
