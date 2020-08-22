@@ -4,6 +4,7 @@ import os
 from os.path import basename
 import asyncio
 import saturnv
+import signal
 import sys
 from dateutil import tz
 from urwid import AsyncioEventLoop, MainLoop, ExitMainLoop, Filler, Text
@@ -83,8 +84,11 @@ class Application(object):
     def run(self):
         # TODO: Use subprocess module for this instead?
         if is_pi():
-            if os.fork(): # child
+            child_pid = os.fork()
+            if child_pid:
                 GPIOKeyBoard(self.conf['button_pins'], self.conf['button_keys']).run()
+
+            self.child_pid = child_pid
 
         self.display.activate()
 
@@ -108,6 +112,7 @@ class Application(object):
 
     def _accept_input(self, key):
         if key.lower() == 'q':
+            os.kill(self.child_pid, signal.SIGUSR1)
             raise ExitMainLoop()
 
     def __button_active_callback(self, b):
