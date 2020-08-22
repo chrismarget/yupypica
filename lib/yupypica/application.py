@@ -85,7 +85,6 @@ class Application(object):
         if is_pi():
             if os.fork(): # child
                 GPIOKeyBoard(self.conf['button_pins'], self.conf['button_keys']).run()
-        sys.exit()
 
         self.display.activate()
 
