@@ -85,7 +85,7 @@ class Application(object):
         # TODO: Use subprocess module for this instead?
         if is_pi():
             child_pid = os.fork()
-            if child_pid:
+            if not child_pid:
                 GPIOKeyBoard(self.conf['button_pins'], self.conf['button_keys']).run()
 
             self.child_pid = child_pid
@@ -112,7 +112,9 @@ class Application(object):
 
     def _accept_input(self, key):
         if key.lower() == 'q':
-            os.kill(self.child_pid, signal.SIGUSR1)
+            # todo: this doesn't seem to be killing off the child pid
+            print("killing child: %d", self.child_pid)
+            os.kill(self.child_pid, signal.SIGTERM)
             raise ExitMainLoop()
 
     def __button_active_callback(self, b):
