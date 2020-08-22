@@ -4,11 +4,13 @@ import os
 from os.path import basename
 import asyncio
 import saturnv
+import sys
 from dateutil import tz
 from urwid import AsyncioEventLoop, MainLoop, ExitMainLoop, Filler, Text
 
 from .button import Button
 from .display import Display
+from .gpio_kb import GPIOKeyBoard
 from .options import Options
 from .detect import is_pi, is_linux
 from .screen import Splash
@@ -39,15 +41,16 @@ class Application(object):
 
         'button_colors': ['#070', '#44f', '#770', '#700'],
         'button_pins': [17, 22, 23, 27],
+        'button_keys': ['KEY_A', 'KEY_B', 'KEY_C', 'KEY_D'],
     }
 
     def __init__(self):
         self.name = basename(sys.argv[0])
         self.acceptor = self._accept_input
 
-        self.log = saturnv.Logger()
-        self.log.set_level(self.default_conf['log_level'])  # from defaults
-        self.log.stderr_off() # don't disturb screen layout
+#        self.log = saturnv.Logger()
+#        self.log.set_level(self.default_conf['log_level'])  # from defaults
+#        self.log.stderr_off() # don't disturb screen layout
 
         # Parse command line arguments, and get the app configuration
         self.options = Options(self)
@@ -55,7 +58,7 @@ class Application(object):
         self.conf = saturnv.AppConf(defaults=Application.default_conf, args=self.args)
         self.tz = tz.gettz(self.conf['clock_timezone'])
 
-        self.log.set_level(self.conf['log_level'])  # from final config
+#        self.log.set_level(self.conf['log_level'])  # from final config
 
 #        try:
 #            check_config(button_count, self.conf)
@@ -78,22 +81,11 @@ class Application(object):
         self.display = Display(self)
 
     def run(self):
-        if not is_pi():
-            self.log.warning("This isn't a Raspberry Pi")
-
-        # TODO: Use subprocess module for this instead
-        # TODO: Use MainLoop.watch_pipe if needed
-        #if os.fork(): # child
-        #    c = open("/tmp/child", "a")
-        #    c.write("child")
-        #    c.close()
-        #    self.log.info("child starts keyboard")
-        #    keyboard()
-        #else:
-        #    p = open("/tmp/parent", "a")
-        #    p.write("parent")
-        #    p.close()
-        #    self.log.info("parent continues normally")
+        # TODO: Use subprocess module for this instead?
+        if is_pi():
+            if os.fork(): # child
+                GPIOKeyBoard(self.conf['button_pins'], self.conf['button_keys']).run()
+        sys.exit()
 
         self.display.activate()
 
