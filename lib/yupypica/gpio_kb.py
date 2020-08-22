@@ -1,11 +1,16 @@
 import uinput
-import RPi.GPIO
 import signal
 from time import sleep
+from .detect import is_pi
 
+if is_pi():
+    import RPi.GPIO
 
 class GPIOKeyBoard:
     def __init__(self, pins, event_names):
+        if not is_pi():
+            return
+
         RPi.GPIO.setmode(RPi.GPIO.BCM)
         pin_to_event = dict()
         for i in range(len(pins)):
@@ -13,30 +18,29 @@ class GPIOKeyBoard:
             # There should be an event associated with every pin
             try:
                 event_name = event_names[i]
-            except AttributeError:
-                raise (RuntimeError("no key event associated with pin %d" % pin))
+            except IndexError:
+                raise RuntimeError("no key event associated with pin %d" % pin)
 
             # get the uinput event variable using the name (a string) passed via configuration
-            # todo: there's probably a safer way to do this
             try:
-                event = eval("uinput." + event_name)
+                event = getattr(uinput, event_name)
             except AttributeError:
-                raise ("uinput module has no event named '%s'" % event_name)
+                raise RuntimeError("uinput module has no event named '%s'" % event_name)
 
             # build up the pin_to_event dict
             pin_to_event[pin] = event
 
         # create the uinput (keyboad) device
-        try:
-            device = uinput.Device(pin_to_event.values())
-        except Exception as e:
-            raise (e)
+        device = uinput.Device(pin_to_event.values())
 
         self.kh = list()
         for (pin, event) in pin_to_event.items():
             self.kh.append(KeyHandler(device, event, pin))
 
     def run(self):
+        if not is_pi():
+            return
+
         for keyhandler in self.kh:
             keyhandler.start()
 
