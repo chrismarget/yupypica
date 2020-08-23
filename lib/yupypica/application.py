@@ -98,7 +98,7 @@ class Application(object):
 
     def run(self):
         # On RPis, start the GPIO Keyboard process
-        if is_pi():
+        if is_pi() and os.geteuid() == 0:
             signal.signal(signal.SIGCHLD, signal.SIG_IGN) # ignore SIGCHLD to prevent a zombie
             if not os.fork(): # in child process
                 self.gkbd = GPIOKeyBoard(self.conf['gpio_keyboard_map'], self.log)
