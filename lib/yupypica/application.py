@@ -1,5 +1,6 @@
 
 import sys
+import time
 import os
 from os.path import basename
 import asyncio
@@ -11,12 +12,13 @@ from urwid import AsyncioEventLoop, MainLoop, ExitMainLoop, Filler, Text
 
 from .button import Button
 from .display import Display
-from .gpio_kb import GPIOKeyBoard
 from .options import Options
 from .detect import is_pi, is_linux
 from .screen import Splash
 from .screen import Main
 
+if is_pi():
+    from .gpio_kb import GPIOKeyBoard
 
 button_count = 4
 
@@ -41,16 +43,21 @@ class Application(object):
         },
 
         'button_colors': ['#070', '#44f', '#770', '#700'],
-        'button_pins': [17, 22, 23, 27],
-        'button_keys': ['KEY_1', 'KEY_Q', 'KEY_A', 'KEY_Z'],
+        'gpio_keyboard_map': {
+            # pin: key
+            17: 'KEY_1',
+            22: 'KEY_Q',
+            23: 'KEY_A',
+            27: 'KEY_Z',
+        },
     }
 
     def __init__(self):
         self.name = basename(sys.argv[0])
-        self.acceptor = self._accept_input
 
+        # Start logger early (use default_conf's value temporarily and update it later)
         self.log = saturnv.Logger()
-        self.log.set_level(self.default_conf['log_level'])  # from defaults
+        self.log.set_level(self.default_conf['log_level'])
         self.log.stderr_off() # don't disturb screen layout
 
         # Parse command line arguments, and get the app configuration
@@ -59,19 +66,10 @@ class Application(object):
         self.conf = saturnv.AppConf(defaults=Application.default_conf, args=self.args)
         self.tz = tz.gettz(self.conf['clock_timezone'])
 
-        self.log.set_level(self.conf['log_level'])  # from final config
+        # Finalize log level from fully-loaded config
+        self.log.set_level(self.conf['log_level'])
 
-#        try:
-#            check_config(button_count, self.conf)
-#        except Exception as e:
-#            raise (e)
-#
-#        for i in range(button_count):
-#            pin = conf["button_pins"][i]
-#            color = conf["button_colors"][i]
-#            b = Button(pin, color, self.__button_active_callback)
-#            self.display.add_button(b)
-
+        # Build the event loop. Use temp filler and replace it when Display starts rendering
         self.asyncio_loop = asyncio.get_event_loop()
         self.loop = MainLoop(
             widget=Filler(Text('...')),
@@ -79,22 +77,27 @@ class Application(object):
             unhandled_input=self.unhandled_input,
         )
 
+        # Prep Display but don't activate it yet
         self.display = Display(self)
 
     def run(self):
-        # TODO: Use subprocess module for this instead?
+        # On RPis, start the GPIO Keyboard process
         if is_pi():
             signal.signal(signal.SIGCHLD, signal.SIG_IGN) # ignore SIGCHLD to prevent a zombie
-            if os.fork(): # child
-                GPIOKeyBoard(self.conf['button_pins'], self.conf['button_keys']).run()
+            if not os.fork(): # in child process
+                self.gkbd = GPIOKeyBoard(self.conf['gpio_keyboard_map'], self.log)
+                self.gkbd.run()
+        # Continue in single or parent process
 
+        # Activate the display with full layout but no content
         self.display.activate()
 
-        # Switch to splash screen and start clock
+        # Switch to splash screen and start the clock
         Splash(self).activate()
         self.display.update_clock(self.loop)
 
         # Do any remaining start up work here
+        # ...
 
         # Switch to main menu after short time
         self.loop.set_alarm_in(2, Main(self).activate)
@@ -102,28 +105,22 @@ class Application(object):
         # Start the reactor
         self.loop.run()
 
-    def accept_input(self, key):
-        self.acceptor(key)
-
-    def set_acceptor(self, acceptor):
-        self.acceptor = self._accept_input
-
-    def _accept_input(self, key):
-        if key.lower() == 'q':
+    def unhandled_input(self, key):
+        if key in 'qQ':                 # Q at the top to exit cleanly
             raise ExitMainLoop()
+        if key == 'ctrl l':             # Screen refresh (if screen gets overwritten or corrupted)
+            self.loop.screen.clear()
+            return True
+
+        self.log.warning("Unhandled input: %s" % key)
 
     def __button_active_callback(self, b):
         self.display.button_event(data=b)
-
-    def unhandled_input(self, key):
-        if key in 'qQ':
-            raise ExitMainLoop()
 
 
 def check_config(count, conf):
     for element_name in ["button_colors", "button_pins"]:
         check_config_element(element_name, count, conf[element_name])
-
 
 def check_config_element(name, count, element):
     # check overall length
