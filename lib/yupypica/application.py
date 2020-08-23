@@ -42,6 +42,22 @@ class Application(object):
             'status':       ['white', 'dark blue'],
         },
 
+        # todo: discussion - I'm not completely convinced about the map
+        #  below. It seems to me that all three "clicky" attributes (color,
+        #  keystroke and GPIO pin) equally need to be mapped together.
+        #  keeping them in three lists allows us to do that. In that case,
+        #  index zero of all three lists (green/17/Key_1) allows us to keep
+        #  track of them that way.
+        #  .
+        #  Alternatively, we could make two maps: a gpio_to_color map and
+        #  a gpio_to_keystroke map.
+        #  .
+        #  I'm not sure which makes more sense yet.
+        #  .
+        #  Additional complications:
+        #  - we might choose to map multiple keystrokes to the same action
+        #  - we might choose to associate actions to keys not associated with
+        #    a gpio pin. "q" for quit, for example.
         'button_colors': ['#070', '#44f', '#770', '#700'],
         'gpio_keyboard_map': {
             # pin: key
