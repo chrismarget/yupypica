@@ -36,7 +36,7 @@ class Application(object):
             'status':       ['white', 'dark blue'],
         },
 
-        'gpio_keyboard_info': [
+        'button_map': [
             (17, '1', '#070'),
             (22, 'q', '#44f'),
             (23, 'a', '#770'),
@@ -72,8 +72,8 @@ class Application(object):
 
         # Prepare button-to-keyboard linkage
         if is_pi() and os.geteuid() == 0:
-            from .gpio_kb import GPIOKeyBoard
-            self.gpio_keyboard = GPIOKeyBoard(self.loop, self.conf['gpio_keyboard_info'])
+            from .buttons import Buttons
+            self.buttons = Buttons(self.loop, self.conf['button_map'])
 
         # Prep Display but don't activate it yet
         self.display = Display(self)
@@ -81,7 +81,7 @@ class Application(object):
     def run(self):
         # Activate button-to-keyboard linkage (if we have one)
         try:
-            self.gpio_keyboard.run()
+            self.buttons.activate()
         except AttributeError:
             pass
 
