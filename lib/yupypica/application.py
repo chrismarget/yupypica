@@ -79,7 +79,7 @@ class Application(object):
         if is_pi() and os.geteuid() == 0:
             import uinput
             from .gpio_kb import GPIOKeyBoard
-            self.gkbd = GPIOKeyBoard(self.conf['gpio_keyboard_info']).run()
+            GPIOKeyBoard(self.conf['gpio_keyboard_info']).run()
 
         # Activate the display with full layout but no content
         self.display.activate()
@@ -96,6 +96,9 @@ class Application(object):
 
         # Start the reactor
         self.loop.run()
+
+        # Leave an extra line to scroll screen
+        print()
 
     def unhandled_input(self, key):
         if key in 'qQ':                 # Q at the top to exit cleanly
