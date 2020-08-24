@@ -39,13 +39,12 @@ class Application(object):
             'status':       ['white', 'dark blue'],
         },
 
-        'gpio_keyboard_info': {
-            # pin: (color, key)
-            17: ('#070', 'KEY_1'),
-            22: ('#44f', 'KEY_Q'),
-            23: ('#770', 'KEY_A'),
-            27: ('#700', 'KEY_Z'),
-        },
+        'gpio_keyboard_info': [
+            (17, 'KEY_1', '#070'),
+            (22, 'KEY_Q', '#44f'),
+            (23, 'KEY_A', '#770'),
+            (27, 'KEY_Z', '#700'),
+        ],
     }
 
     def __init__(self):
@@ -77,20 +76,10 @@ class Application(object):
         self.display = Display(self)
 
     def run(self):
-        # On RPis, start the GPIO Keyboard process
         if is_pi() and os.geteuid() == 0:
             import uinput
             from .gpio_kb import GPIOKeyBoard
-            signal.signal(signal.SIGCHLD, signal.SIG_IGN) # ignore SIGCHLD to prevent a zombie
-            child_pid = os.fork()
-            if not child_pid: # in child process
-                pin_to_event = {
-                    i[0]: getattr(uinput,i[1][1]) for i in self.conf['gpio_keyboard_info'].items()
-                }
-                self.gkbd = GPIOKeyBoard(pin_to_event, self.log).run()
-                sys.exit() # the child process must exit here.
-
-        # Continue in single or parent process
+            self.gkbd = GPIOKeyBoard(self.conf['gpio_keyboard_info']).run()
 
         # Activate the display with full layout but no content
         self.display.activate()
@@ -107,10 +96,6 @@ class Application(object):
 
         # Start the reactor
         self.loop.run()
-
-        # Kill the GPIO keyboard (if we managed to create one)
-        if child_pid:
-            os.kill(child_pid, signal.SIGTERM)
 
     def unhandled_input(self, key):
         if key in 'qQ':                 # Q at the top to exit cleanly

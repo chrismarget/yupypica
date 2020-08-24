@@ -1,7 +1,7 @@
 import datetime
 import math
 import time
-from urwid import ExitMainLoop, AttrMap, Columns, Filler, Frame, Text
+from urwid import ExitMainLoop, AttrMap, Columns, Filler, Frame, Text, Padding
 
 
 
@@ -41,11 +41,11 @@ class Display(object):
         self.button_count += 1
 
     def _init_header(self):
-        self.app_name = Text(self.app.name, align='center')
-        self.screen_name = Text("initial screen_name", align='right')
+        self.app_name = Text(self.app.name, align='right')
+        self.screen_name = Text("...")
         header = Columns([
-            (len(self.app.name)+4, AttrMap(self.app_name, 'app_name')),   # (length, widget)
-            AttrMap(self.screen_name, 'screen_name'),                     # just widget
+            AttrMap(Padding(self.screen_name, align="left", left=1), 'screen_name'),
+            AttrMap(self.app_name, 'app_name'),
         ])
         return AttrMap(header, 'header')
 

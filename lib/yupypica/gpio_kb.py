@@ -1,31 +1,28 @@
 import uinput
 import signal
+import sys
+import saturnv
 from time import sleep
 from .detect import is_pi
 import RPi.GPIO
 
 class GPIOKeyBoard:
-    def __init__(self, event_map, log):
+    def __init__(self, event_map):
         self.event_map = event_map
-        self.log = log
 
         RPi.GPIO.setmode(RPi.GPIO.BCM) # Use Broadcom pin numbers rather than header pins
 
-        # create the uinput (keyboard) device
-        device = uinput.Device(event_map.values())
-        self.kh = []
-        for pin, event in event_map.items():
-            self.kh.append(KeyHandler(device, event, pin))
+        # create the uinput (keyboard) device and keyhandlers
+        self.device = uinput.Device([getattr(uinput, k[1]) for k in event_map])
+        self.keyhandlers = []
+        for event in event_map:
+            key = getattr(uinput, event[1])
+            pin = event[0]
+            self.keyhandlers.append(KeyHandler(self.device, key, pin))
 
     def run(self):
-        if not is_pi():
-            return
-
-        for keyhandler in self.kh:
+        for keyhandler in self.keyhandlers:
             keyhandler.start()
-
-        signal.pause()
-
 
 class KeyHandler:
     def __init__(self, device, event, pin):
@@ -33,9 +30,8 @@ class KeyHandler:
         self.event = event
         self.pin = pin
 
-        RPi.GPIO.setup(pin, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
-
     def start(self):
+        RPi.GPIO.setup(self.pin, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
         RPi.GPIO.add_event_detect(self.pin, RPi.GPIO.FALLING,
             callback=self.keystroke, bouncetime=200)
 
