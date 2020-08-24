@@ -37,9 +37,7 @@ class KeyHandler:
 
     def start(self):
         RPi.GPIO.add_event_detect(self.pin, RPi.GPIO.FALLING,
-                callback=self.debounce_and_click, bouncetime=100)
+            callback=self.keystroke, bouncetime=200)
 
-    def debounce_and_click(self, channel):
-        sleep(0.05)
-        if RPi.GPIO.input(channel) == 0:
-            self.device.emit_click(self.event)
+    def keystroke(self, channel):
+        self.device.emit_click(self.event)
