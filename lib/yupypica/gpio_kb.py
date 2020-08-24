@@ -2,17 +2,12 @@ import uinput
 import signal
 from time import sleep
 from .detect import is_pi
-
-if is_pi():
-    import RPi.GPIO
+import RPi.GPIO
 
 class GPIOKeyBoard:
     def __init__(self, event_map, log):
         self.event_map = event_map
         self.log = log
-
-        if not is_pi():
-            return
 
         RPi.GPIO.setmode(RPi.GPIO.BCM) # Use Broadcom pin numbers rather than header pins
 
