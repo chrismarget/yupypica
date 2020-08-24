@@ -88,6 +88,7 @@ class Application(object):
                     i[0]: getattr(uinput,i[1][1]) for i in self.conf['gpio_keyboard_info'].items()
                 }
                 self.gkbd = GPIOKeyBoard(pin_to_event, self.log).run()
+                sys.exit() # the child process mu exit here.
 
         # Continue in single or parent process
 
