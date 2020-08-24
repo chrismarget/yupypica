@@ -107,6 +107,10 @@ class Application(object):
         # Start the reactor
         self.loop.run()
 
+        # kill keyboard
+        if child_pid:
+            os.kill(child_pid, signal.SIGTERM)
+
     def unhandled_input(self, key):
         if key in 'qQ':                 # Q at the top to exit cleanly
             raise ExitMainLoop()
