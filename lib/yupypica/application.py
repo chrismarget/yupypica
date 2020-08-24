@@ -107,7 +107,7 @@ class Application(object):
         # Start the reactor
         self.loop.run()
 
-        # kill keyboard
+        # Kill the GPIO keyboard (if we managed to create one)
         if child_pid:
             os.kill(child_pid, signal.SIGTERM)
 
