@@ -14,7 +14,6 @@ from .display import Display
 from .options import Options
 from .detect import is_pi
 from .screen import Splash, Main
-from .gpio_kb import GPIOKeyBoard
 
 
 class Application(object):
@@ -71,7 +70,8 @@ class Application(object):
 
         # Prepare button-to-keyboard linkage
         if is_pi() and os.geteuid() == 0:
-              self.gpio_keyboard = GPIOKeyBoard(self.conf['gpio_keyboard_info'])
+            from .gpio_kb import GPIOKeyBoard
+            self.gpio_keyboard = GPIOKeyBoard(self.conf['gpio_keyboard_info'])
 
         # Prep Display but don't activate it yet
         self.display = Display(self)
