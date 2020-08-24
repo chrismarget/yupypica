@@ -11,7 +11,6 @@ class Splash(Screen):
         "`---'     |    `---'|               ",
         "",
         "Stand-alone Certificate Authority",
-        "Version 1.0.8",
     ]
 
     def __init__(self, app):
@@ -30,6 +29,7 @@ class Splash(Screen):
         pile = []
         for line in self.logo:
             pile.append(urwid.Text(line, align='center'))
+        pile.append(urwid.Text(self.app.version, align='center'))
 
         return urwid.AttrMap(urwid.Pile(pile), 'logo')
 

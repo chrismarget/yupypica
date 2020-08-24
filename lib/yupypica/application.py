@@ -14,6 +14,7 @@ from .display import Display
 from .options import Options
 from .detect import is_pi
 from .screen import Splash, Main
+from .version import get_version
 
 
 class Application(object):
@@ -45,6 +46,7 @@ class Application(object):
 
     def __init__(self):
         self.name = basename(sys.argv[0])
+        self.version = get_version()
 
         # Start logger early (use default_conf's value temporarily and update it later)
         self.log = saturnv.Logger()
