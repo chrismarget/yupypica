@@ -77,9 +77,11 @@ class Application(object):
         self.display = Display(self)
 
     def run(self):
-        # Activate button-to-keyboard linkage
-        if self.gpio_keyboard:
+        # Activate button-to-keyboard linkage (if we have one)
+        try:
             self.gpio_keyboard.run()
+        except AttributeError:
+            pass
 
         # Activate the display with full layout but no content
         self.display.activate()
