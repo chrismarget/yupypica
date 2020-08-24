@@ -10,15 +10,12 @@ import sys
 from dateutil import tz
 from urwid import AsyncioEventLoop, MainLoop, ExitMainLoop, Filler, Text
 
-from .button import Button
 from .display import Display
 from .options import Options
-from .detect import is_pi, is_linux
+from .detect import is_pi
 from .screen import Splash
 from .screen import Main
 
-if is_pi():
-    from .gpio_kb import GPIOKeyBoard
 
 button_count = 4
 
@@ -42,29 +39,12 @@ class Application(object):
             'status':       ['white', 'dark blue'],
         },
 
-        # todo: discussion - I'm not completely convinced about the map
-        #  below. It seems to me that all three "clicky" attributes (color,
-        #  keystroke and GPIO pin) equally need to be mapped together.
-        #  keeping them in three lists allows us to do that. In that case,
-        #  index zero of all three lists (green/17/Key_1) allows us to keep
-        #  track of them that way.
-        #  .
-        #  Alternatively, we could make two maps: a gpio_to_color map and
-        #  a gpio_to_keystroke map.
-        #  .
-        #  I'm not sure which makes more sense yet.
-        #  .
-        #  Additional complications:
-        #  - we might choose to map multiple keystrokes to the same action
-        #  - we might choose to associate actions to keys not associated with
-        #    a gpio pin. "q" for quit, for example.
-        'button_colors': ['#070', '#44f', '#770', '#700'],
-        'gpio_keyboard_map': {
-            # pin: key
-            17: 'KEY_1',
-            22: 'KEY_Q',
-            23: 'KEY_A',
-            27: 'KEY_Z',
+        'gpio_keyboard_info': {
+            # pin: (color, key)
+            17: ('#070', 'KEY_1'),
+            22: ('#44f', 'KEY_Q'),
+            23: ('#770', 'KEY_A'),
+            27: ('#700', 'KEY_Z'),
         },
     }
 
@@ -99,10 +79,16 @@ class Application(object):
     def run(self):
         # On RPis, start the GPIO Keyboard process
         if is_pi() and os.geteuid() == 0:
+            import uinput
+            from .gpio_kb import GPIOKeyBoard
             signal.signal(signal.SIGCHLD, signal.SIG_IGN) # ignore SIGCHLD to prevent a zombie
-            if not os.fork(): # in child process
-                self.gkbd = GPIOKeyBoard(self.conf['gpio_keyboard_map'], self.log)
-                self.gkbd.run()
+            child_pid = os.fork()
+            if not child_pid: # in child process
+                pin_to_event = {
+                    i[0]: getattr(uinput,i[1][1]) for i in self.conf['gpio_keyboard_info'].items()
+                }
+                self.gkbd = GPIOKeyBoard(pin_to_event, self.log).run()
+
         # Continue in single or parent process
 
         # Activate the display with full layout but no content
