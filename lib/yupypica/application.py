@@ -78,7 +78,7 @@ class Application(object):
 
     def run(self):
         # Activate button-to-keyboard linkage
-        if is_pi() and os.geteuid() == 0:
+        if self.gpio_keyboard:
             self.gpio_keyboard.run()
 
         # Activate the display with full layout but no content
