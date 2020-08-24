@@ -1,37 +1,34 @@
-import uinput
 import RPi.GPIO
 
-
 class GPIOKeyBoard:
-    def __init__(self, event_map):
-        self.event_map = event_map
+    def __init__(self, loop, key_map):
+        self.loop = loop
+        self.key_map = key_map
 
-        RPi.GPIO.setmode(RPi.GPIO.BCM) # Use Broadcom pin numbers rather than header pins
-
-        # create the uinput (keyboard) device and keyhandlers
-        self.device = uinput.Device([getattr(uinput, k[1]) for k in event_map])
+        # Create the key handlers
         self.keyhandlers = []
-        for event in event_map:
-            key = getattr(uinput, event[1])
-            pin = event[0]
-            self.keyhandlers.append(KeyHandler(self.device, key, pin))
+        for this_key in key_map:
+            pin = this_key[0]
+            key = this_key[1]
+            self.keyhandlers.append(KeyHandler(loop, pin, key))
 
     def run(self):
+        RPi.GPIO.setmode(RPi.GPIO.BCM)
         for keyhandler in self.keyhandlers:
             keyhandler.start()
 
 
 class KeyHandler:
-    def __init__(self, device, event, pin):
-        self.device = device
-        self.event = event
+    def __init__(self, loop, pin, key):
+        self.loop = loop
         self.pin = pin
+        self.key = key
 
     def start(self):
         RPi.GPIO.setup(self.pin, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
         RPi.GPIO.add_event_detect(self.pin, RPi.GPIO.FALLING,
             callback=self.keystroke, bouncetime=200)
 
-    def keystroke(self, channel):
-        self.device.emit_click(self.event)
+    def keystroke(self, pin):
+        self.loop.process_input(self.key)
 

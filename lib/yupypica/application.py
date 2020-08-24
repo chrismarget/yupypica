@@ -37,10 +37,10 @@ class Application(object):
         },
 
         'gpio_keyboard_info': [
-            (17, 'KEY_1', '#070'),
-            (22, 'KEY_Q', '#44f'),
-            (23, 'KEY_A', '#770'),
-            (27, 'KEY_Z', '#700'),
+            (17, '1', '#070'),
+            (22, 'q', '#44f'),
+            (23, 'a', '#770'),
+            (27, 'z', '#700'),
         ],
     }
 
@@ -73,7 +73,7 @@ class Application(object):
         # Prepare button-to-keyboard linkage
         if is_pi() and os.geteuid() == 0:
             from .gpio_kb import GPIOKeyBoard
-            self.gpio_keyboard = GPIOKeyBoard(self.conf['gpio_keyboard_info'])
+            self.gpio_keyboard = GPIOKeyBoard(self.loop, self.conf['gpio_keyboard_info'])
 
         # Prep Display but don't activate it yet
         self.display = Display(self)
@@ -105,10 +105,16 @@ class Application(object):
         print()
 
     def unhandled_input(self, key):
-        if key in 'qQ':                 # Q at the top to exit cleanly
+        # Out-of-band controls
+        if key == 'esc':                # Exit the program
             raise ExitMainLoop()
         if key == 'ctrl l':             # Screen refresh (if screen gets overwritten or corrupted)
             self.loop.screen.clear()
             return True
+
+        if key in '1qaz':
+            self.display.set_status("Got %s key" % key)
+            return True
+
         self.log.warning("Unhandled input: %s" % key)
 
