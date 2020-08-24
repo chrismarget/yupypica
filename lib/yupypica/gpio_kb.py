@@ -1,9 +1,4 @@
 import uinput
-import signal
-import sys
-import saturnv
-from time import sleep
-from .detect import is_pi
 import RPi.GPIO
 
 

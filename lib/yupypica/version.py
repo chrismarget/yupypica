@@ -1,7 +1,6 @@
 # This program is placed into the public domain.
 from os.path import dirname, isdir, join
 from subprocess import check_output, CalledProcessError
-import time
 
 
 def get_version():
