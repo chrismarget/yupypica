@@ -13,11 +13,8 @@ from urwid import AsyncioEventLoop, MainLoop, ExitMainLoop, Filler, Text
 from .display import Display
 from .options import Options
 from .detect import is_pi
-from .screen import Splash
-from .screen import Main
-
-
-button_count = 4
+from .screen import Splash, Main
+from .gpio_kb import GPIOKeyBoard
 
 
 class Application(object):
@@ -72,14 +69,17 @@ class Application(object):
             unhandled_input=self.unhandled_input,
         )
 
+        # Prepare button-to-keyboard linkage
+        if is_pi() and os.geteuid() == 0:
+              self.gpio_keyboard = GPIOKeyBoard(self.conf['gpio_keyboard_info'])
+
         # Prep Display but don't activate it yet
         self.display = Display(self)
 
     def run(self):
+        # Activate button-to-keyboard linkage
         if is_pi() and os.geteuid() == 0:
-            import uinput
-            from .gpio_kb import GPIOKeyBoard
-            GPIOKeyBoard(self.conf['gpio_keyboard_info']).run()
+            self.gpio_keyboard.run()
 
         # Activate the display with full layout but no content
         self.display.activate()
@@ -106,28 +106,5 @@ class Application(object):
         if key == 'ctrl l':             # Screen refresh (if screen gets overwritten or corrupted)
             self.loop.screen.clear()
             return True
-
         self.log.warning("Unhandled input: %s" % key)
 
-    def __button_active_callback(self, b):
-        self.display.button_event(data=b)
-
-
-def check_config(count, conf):
-    for element_name in ["button_colors", "button_pins"]:
-        check_config_element(element_name, count, conf[element_name])
-
-def check_config_element(name, count, element):
-    # check overall length
-    counted = len(element)
-    if count != counted:
-        raise (RuntimeError("%s has %d elements, expected %d" % (name, counted, count)))
-
-    # count unique items
-    counted = len(set(element))
-    if count != counted:
-        raise (
-            RuntimeError(
-                "%s has %d unique elements, expected %d" % (name, counted, count)
-            )
-        )

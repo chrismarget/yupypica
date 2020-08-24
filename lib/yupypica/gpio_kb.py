@@ -6,6 +6,7 @@ from time import sleep
 from .detect import is_pi
 import RPi.GPIO
 
+
 class GPIOKeyBoard:
     def __init__(self, event_map):
         self.event_map = event_map
@@ -24,6 +25,7 @@ class GPIOKeyBoard:
         for keyhandler in self.keyhandlers:
             keyhandler.start()
 
+
 class KeyHandler:
     def __init__(self, device, event, pin):
         self.device = device
@@ -37,3 +39,4 @@ class KeyHandler:
 
     def keystroke(self, channel):
         self.device.emit_click(self.event)
+
