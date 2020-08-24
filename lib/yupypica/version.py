@@ -1,6 +1,7 @@
 # This program is placed into the public domain.
 from os.path import dirname, isdir, join
 from subprocess import check_output, CalledProcessError
+import time
 
 
 def get_version():
@@ -14,17 +15,5 @@ def get_version():
             version = check_output(cmd, cwd=d).decode().strip()
         except CalledProcessError:
             return version
-
-        # todo: check for comitted changes since last tag
-
-        # Check for uncommitted changes
-        cmd = "git diff-index --name-only HEAD".split()
-        try:
-            working = check_output(cmd).decode().strip()
-        except CalledProcessError:
-            return version
-
-        if working != "":
-            version += "-working"
 
     return version
