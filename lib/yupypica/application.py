@@ -5,15 +5,13 @@ import os
 from os.path import basename
 import asyncio
 import saturnv
-import signal
 import sys
-from dateutil import tz
 from urwid import AsyncioEventLoop, MainLoop, ExitMainLoop, Filler, Text
 
 from .display import Display
 from .options import Options
 from .detect import is_pi
-from .screen import Splash, Main
+from .screen import SplashScreen, MainScreen
 from .version import get_version
 
 
@@ -45,8 +43,6 @@ class Application(object):
     }
 
     def __init__(self):
-        self.name = basename(sys.argv[0])
-        self.version = get_version()
 
         # Start logger early (use default_conf's value temporarily and update it later)
         self.log = saturnv.Logger()
@@ -56,8 +52,9 @@ class Application(object):
         # Parse command line arguments, and get the app configuration
         self.options = Options(self)
         self.args = self.options.get_args()
-        self.conf = saturnv.AppConf(defaults=Application.default_conf, args=self.args)
-        self.tz = tz.gettz(self.conf['clock_timezone'])
+        self.conf = saturnv.AppConf(defaults=Application.default_conf,
+                args=self.args)
+        self.conf['app_version'] = get_version()
 
         # Finalize log level from fully-loaded config
         self.log.set_level(self.conf['log_level'])
@@ -76,7 +73,9 @@ class Application(object):
             self.buttons = Buttons(self.loop, self.conf['button_map'])
 
         # Prep Display but don't activate it yet
-        self.display = Display(self)
+        self.display = Display(self.loop, self.conf)
+        self.splash_screen = SplashScreen(self.loop, self.conf, self.display)
+        self.main_screen = MainScreen(self.loop, self.conf, self.display)
 
     def run(self):
         # Activate button-to-keyboard linkage (if we have one)
@@ -89,14 +88,14 @@ class Application(object):
         self.display.activate()
 
         # Switch to splash screen and start the clock
-        Splash(self).activate()
+        self.splash_screen.activate()
         self.display.update_clock(self.loop)
 
         # Do any remaining start up work here
         # ...
 
         # Switch to main menu after short time
-        self.loop.set_alarm_in(2, Main(self).activate)
+        self.loop.set_alarm_in(2, self.main_screen.activate)
 
         # Start the reactor
         self.loop.run()

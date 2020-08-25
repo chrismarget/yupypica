@@ -1,8 +1,10 @@
 import urwid
 
 class Screen(object):
-    def __init__(self, app):
-        self.app = app
+    def __init__(self, loop, conf, display):
+        self.loop = loop
+        self.conf = conf
+        self.display = display
 
     def activate(self, loop=None, data=None):
         self.set_screen_name()

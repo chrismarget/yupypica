@@ -10,13 +10,15 @@ class Display(object):
     button_count = 0
     last = 0
 
-    def __init__(self, app):
-        self.app = app
+    def __init__(self, loop, conf):
+        self.loop = loop
+        self.conf = conf
+
         self.palette = self.theme_to_palette()
 
-        app.loop.screen.set_terminal_properties(colors=88)
+        loop.screen.set_terminal_properties(colors=88)
         # NOTE: Add extr palette entries here
-        app.loop.screen.register_palette(self.palette)
+        loop.screen.register_palette(self.palette)
 
         header = self._init_header()
         footer = self._init_footer()
@@ -24,10 +26,10 @@ class Display(object):
         self.frame = AttrMap(Frame(self.main_box, header, footer), 'background')
 
     def activate(self):
-        self.app.loop.widget = self.frame
+        self.loop.widget = self.frame
 
     def theme_to_palette(self):
-        theme = self.app.conf.get('theme', {})
+        theme = self.conf.get('theme', {})
         palette = []
         for name, colors in theme.items():
             palette.append((name, '', '', '', *colors))
@@ -41,7 +43,7 @@ class Display(object):
         self.button_count += 1
 
     def _init_header(self):
-        self.app_name = Text(self.app.name, align='right')
+        self.app_name = Text(self.conf['app_name'], align='right')
         self.screen_name = Text("...")
         header = Columns([
             AttrMap(Padding(self.screen_name, align="left", left=1), 'screen_name'),
@@ -64,8 +66,8 @@ class Display(object):
         self.status.set_text(status)
 
     def update_clock(self, loop, data=None):
-        now = datetime.datetime.now(tz=self.app.tz)
-        self.clock.set_text(now.strftime(self.app.conf['clock_format']))
+        now = datetime.datetime.now() #tz=self.conf['clock_timezone'])
+        self.clock.set_text(now.strftime(self.conf['clock_format']))
 
         next_second = math.ceil(time.time())
         #self.app.main_loop.set_alarm_at(next_second, self.update_clock)

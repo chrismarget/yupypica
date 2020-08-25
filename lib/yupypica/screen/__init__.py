@@ -1,2 +1,2 @@
-from .splash import Splash
-from .main import Main
+from .splash_screen import SplashScreen
+from .main_screen import MainScreen
