@@ -34,12 +34,12 @@ class Application(object):
             'status':       ['white', 'dark blue'],
         },
 
-        'button_map': [
-            (17, '1', '#070'),
-            (22, 'q', '#44f'),
-            (23, 'a', '#770'),
-            (27, 'z', '#700'),
-        ],
+        'pin_color_map': {
+            17: '#070',
+            22: '#44f',
+            23: '#770',
+            27: '#700',
+        },
     }
 
     def __init__(self):
@@ -70,7 +70,7 @@ class Application(object):
         # Prepare button-to-keyboard linkage
         if is_pi() and os.geteuid() == 0:
             from .buttons import Buttons
-            self.buttons = Buttons(self.loop, self.conf['button_map'])
+            self.buttons = Buttons(self.loop, list(self.conf['pin_color_map']))
 
         # Prep Display but don't activate it yet. Prep starting screens.
         self.display = Display(self.loop, self.conf)
@@ -95,7 +95,7 @@ class Application(object):
         # ...
 
         # Switch to main menu after short time
-        self.loop.set_alarm_in(2, self.main_screen.activate)
+        self.loop.set_alarm_in(1, self.main_screen.activate)
 
         # Start the reactor
         self.loop.run()
@@ -112,9 +112,10 @@ class Application(object):
             return True
 
         # TODO: These should be ignored here
-        if key in '1qaz':
-            self.display.set_status("Got %s key" % key)
-            return True
+        # if key in '1qaz':
+        #     self.display.set_status("Got %s key" % key)
+        self.display.set_status("Got key %s" % key)
+        return True
 
         self.log.warning("Unhandled input: %s" % key)
 

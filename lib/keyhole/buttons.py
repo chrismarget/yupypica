@@ -1,16 +1,14 @@
 import RPi.GPIO
 
+
 class Buttons:
-    def __init__(self, loop, button_map):
+    def __init__(self, loop, pins):
         self.loop = loop
-        self.button_map = button_map
 
         # Create the button handlers
         self.buttons = []
-        for button in button_map:
-            pin = button[0]
-            key = button[1]
-            self.buttons.append(Button(loop, pin, key))
+        for i in range(min(len(pins), 12)):  # only 12 Fn keys
+            self.buttons.append(Button(loop, pins[i], "f" + str(i + 1)))
 
     def activate(self):
         RPi.GPIO.setmode(RPi.GPIO.BCM)
@@ -26,9 +24,9 @@ class Button:
 
     def start(self):
         RPi.GPIO.setup(self.pin, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
-        RPi.GPIO.add_event_detect(self.pin, RPi.GPIO.FALLING,
-            callback=self.push, bouncetime=200)
+        RPi.GPIO.add_event_detect(
+            self.pin, RPi.GPIO.FALLING, callback=self.push, bouncetime=200
+        )
 
     def push(self, pin):
         self.loop.process_input(self.key)
-
