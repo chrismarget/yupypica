@@ -72,7 +72,7 @@ class Application(object):
             from .buttons import Buttons
             self.buttons = Buttons(self.loop, self.conf['button_map'])
 
-        # Prep Display but don't activate it yet
+        # Prep Display but don't activate it yet. Prep starting screens.
         self.display = Display(self.loop, self.conf)
         self.splash_screen = SplashScreen(self.loop, self.conf, self.display)
         self.main_screen = MainScreen(self.loop, self.conf, self.display)
@@ -107,10 +107,11 @@ class Application(object):
         # Out-of-band controls
         if key == 'esc':                # Exit the program
             raise ExitMainLoop()
-        if key == 'ctrl l':             # Screen refresh (if screen gets overwritten or corrupted)
+        if key == 'ctrl l':             # Refresh overwritten/corrupted screen
             self.loop.screen.clear()
             return True
 
+        # TODO: These should be ignored here
         if key in '1qaz':
             self.display.set_status("Got %s key" % key)
             return True

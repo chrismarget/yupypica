@@ -23,10 +23,10 @@ class Display(object):
         header = self._init_header()
         footer = self._init_footer()
         self.main_box = Filler(Text(''))
-        self.frame = AttrMap(Frame(self.main_box, header, footer), 'background')
+        self.frame = Frame(self.main_box, header, footer)
 
     def activate(self):
-        self.loop.widget = self.frame
+        self.loop.widget = AttrMap(self.frame, 'background')
 
     def theme_to_palette(self):
         theme = self.conf.get('theme', {})
@@ -70,12 +70,8 @@ class Display(object):
         self.clock.set_text(now.strftime(self.conf['clock_format']))
 
         next_second = math.ceil(time.time())
-        #self.app.main_loop.set_alarm_at(next_second, self.update_clock)
         loop.set_alarm_at(next_second, self.update_clock)
 
     def set_body(self, body):
-        self.main_box.set_body(body)
-
-#    def button_event(self, loop=None, data=None):
-#        self.populate_frame(loop=loop, data=data)
+        self.frame.contents['body'] = (body, None)
 

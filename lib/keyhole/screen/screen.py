@@ -7,6 +7,8 @@ class Screen(object):
         self.display = display
 
     def activate(self, loop=None, data=None):
+        self.display.set_status("")
+
         self.set_screen_name()
         self.set_contents()
         self.set_status()
