@@ -4,11 +4,11 @@ from .screen import Screen
 
 class SplashScreen(Screen):
     logo = [
-        "                         o          ",
-        ",   ..   .,---.,   .,---..,---.,---.",
-        "|   ||   ||   ||   ||   |||    ,---|",
-        "`---|`---'|---'`---||---'``---'`---^",
-        "`---'     |    `---'|               ",
+	" _           _       _     ",
+	"| |_ ___ _ _| |_ ___| |___ ",
+	"| '_| -_| | |   | . | | -_|",
+	"|_,_|___|_  |_|_|___|_|___|",
+	"        |___|              ",
         "",
         "Stand-alone Certificate Authority",
     ]
@@ -26,12 +26,10 @@ class SplashScreen(Screen):
         self.display.set_status("Initializing")
 
     def build_logo(self):
-        return urwid.Pile([urwid.Filler(urwid.Text("HELLO"))])
         pile = []
         for line in self.logo:
             pile.append(urwid.Text(line, align='center'))
-        pile.append(urwid.Text(self.conf['app_version'], align='center'))
-
-        return urwid.Pile(pile)
-        return urwid.AttrMap(urwid.Pile(pile), 'logo')
+        pile = urwid.Pile(pile)
+        pile = urwid.Filler(pile)
+        return urwid.AttrMap(pile, 'logo')
 
