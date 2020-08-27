@@ -97,7 +97,7 @@ class Application(object):
         # ...
 
         # Switch to main menu after short time
-        self.loop.set_alarm_in(1, self.main_screen.activate)
+        self.loop.set_alarm_in(5, self.main_screen.activate)
 
         # Start the reactor
         self.loop.run()
