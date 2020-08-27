@@ -1,5 +1,6 @@
 import urwid
 
+
 class Screen(object):
     def __init__(self, loop, conf, display):
         self.loop = loop
@@ -25,4 +26,3 @@ class Screen(object):
 
     def set_keys(self):
         pass
-

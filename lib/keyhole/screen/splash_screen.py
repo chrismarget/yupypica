@@ -43,8 +43,8 @@ class SplashScreen(Screen):
     def build_logo(self):
         pile = []
         for line in self.logo:
-            pile.append(urwid.Text(line, align='center'))
-        pile.append(urwid.Text(self.conf['app_version'], align='center'))
+            pile.append(urwid.Text(line, align="center"))
+        pile.append(urwid.Text(self.conf["app_version"], align="center"))
         pile = urwid.Pile(pile)
         pile = urwid.Filler(pile)
         return urwid.AttrMap(pile, "logo")
