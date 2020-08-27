@@ -3,6 +3,7 @@ from urwid import AttrMap
 
 from .screen import Screen
 
+
 class MainScreen(Screen):
     def __init__(self, loop, conf, display):
         super().__init__(loop, conf, display)
@@ -30,4 +31,3 @@ class MainScreen(Screen):
 
     def set_status(self):
         self.display.set_status("")
-

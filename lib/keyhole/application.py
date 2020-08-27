@@ -1,4 +1,3 @@
-
 import sys
 import time
 import os
@@ -17,54 +16,57 @@ from .version import get_version
 
 class Application(object):
     default_conf = {
-        'log_level': 'warning',
-        'clock_format': '%Y-%m-%d %H:%M:%S %Z',
-        'clock_timezone': 'utc',
-        'theme': {
-            # name:         [foreground, background]
-            'background':   ['white', 'light gray'],
-            'logo':         ['dark blue', 'light gray'],
-
-            'header':       ['white', 'light blue'],
-            'app_name':     ['white', 'light blue'],
-            'screen_name':  ['white', 'dark blue'],
-
-            'footer':       ['white', 'dark blue'],
-            'clock':        ['white', 'dark blue'],
-            'status':       ['white', 'dark blue'],
-
-            'button':       ['white', 'dark blue'],
+        "log_level": "warning",
+        "clock_format": "%Y-%m-%d %H:%M:%S %Z",
+        "clock_timezone": "utc",
+        "title": "KeyHole",
+        "subtitle": "Stand-alone Certificate Authority",
+        "themes": {
+            "main": {
+                "background":  ["white", "light gray"],
+                "logo":        ["dark blue", "light gray"],
+                "header":      ["white", "light blue"],
+                "app_name":    ["white", "light blue"],
+                "screen_name": ["white", "dark blue"],
+                "footer":      ["white", "dark blue"],
+                "clock":       ["white", "dark blue"],
+                "status":      ["white", "dark blue"],
+                "button":      ["white", "dark blue"],
+            },
+            "space": {
+                "background":  ["black", "black"],
+                "logo":        ["white", "black"],
+                "header":      ["black", "black"],
+                "app_name":    ["black", "black"],
+                "screen_name": ["black", "black"],
+                "footer":      ["black", "black"],
+                "clock":       ["dark gray", "black"],
+                "status":      ["dark gray", "black"],
+            }
         },
-
-        'pin_color_map': {
-            17: '#070',
-            22: '#44f',
-            23: '#770',
-            27: '#700',
-        },
+        "pin_color_map": {17: "#070", 22: "#44f", 23: "#770", 27: "#700",},
     }
 
     def __init__(self):
 
         # Start logger early (use default_conf's value temporarily and update it later)
         self.log = saturnv.Logger()
-        self.log.set_level(self.default_conf['log_level'])
-        self.log.stderr_off() # don't disturb screen layout
+        self.log.set_level(self.default_conf["log_level"])
+        self.log.stderr_off()  # don't disturb screen layout
 
         # Parse command line arguments, and get the app configuration
         self.options = Options(self)
         self.args = self.options.get_args()
-        self.conf = saturnv.AppConf(defaults=Application.default_conf,
-                args=self.args)
-        self.conf['app_version'] = get_version()
+        self.conf = saturnv.AppConf(defaults=Application.default_conf, args=self.args)
+        self.conf["app_version"] = get_version()
 
         # Finalize log level from fully-loaded config
-        self.log.set_level(self.conf['log_level'])
+        self.log.set_level(self.conf["log_level"])
 
         # Build the event loop. Use temp filler and replace it when Display starts rendering
         self.asyncio_loop = asyncio.get_event_loop()
         self.loop = MainLoop(
-            widget=Filler(Text('...')),
+            widget=Filler(Text("...")),
             event_loop=AsyncioEventLoop(loop=self.asyncio_loop),
             unhandled_input=self.unhandled_input,
         )
@@ -72,7 +74,8 @@ class Application(object):
         # Prepare button-to-keyboard linkage
         if is_pi() and os.geteuid() == 0:
             from .buttons import Buttons
-            self.buttons = Buttons(self.loop, list(self.conf['pin_color_map']))
+
+            self.buttons = Buttons(self.loop, list(self.conf["pin_color_map"]))
 
         # Prep Display but don't activate it yet. Prep starting screens.
         self.display = Display(self.loop, self.conf)
@@ -97,7 +100,7 @@ class Application(object):
         # ...
 
         # Switch to main menu after short time
-        self.loop.set_alarm_in(1, self.main_screen.activate)
+        self.loop.set_alarm_in(5, self.main_screen.activate)
 
         # Start the reactor
         self.loop.run()
@@ -107,17 +110,14 @@ class Application(object):
 
     def unhandled_input(self, key):
         # Out-of-band controls
-        if key == 'esc':                # Exit the program
+        if key == "esc":  # Exit the program
             raise ExitMainLoop()
-        if key == 'ctrl l':             # Refresh overwritten/corrupted screen
+        if key == "ctrl l":  # Refresh overwritten/corrupted screen
             self.loop.screen.clear()
             return True
 
         # TODO: These should be ignored here
-        # if key in '1qaz':
-        #     self.display.set_status("Got %s key" % key)
         self.display.set_status("Got key %s" % key)
         return True
 
         self.log.warning("Unhandled input: %s" % key)
-

@@ -8,7 +8,7 @@ class Buttons:
         # Create the button handlers
         self.buttons = []
         for i in range(min(len(pins), 8)):  # f13 - f20
-            self.buttons.append(Button(loop, pins[i], 'f' % i+12))
+            self.buttons.append(Button(loop, pins[i], "f%d" % (i+13)))
 
     def activate(self):
         RPi.GPIO.setmode(RPi.GPIO.BCM)
