@@ -5,26 +5,23 @@ from .screen import Screen
 
 class SplashScreen(Screen):
     logo = [
-        " __              ",
-        "|##|             ",
-        "|##|             ",
-        "|##|         O   ",
-        "|##|      __/    ",
-        "|##|\    / /\    ",
-        "|##| \  /\__/    ",
-        "|##|  \/o  /  -- ",
-        "|##|  /o  /  |##|",
-        " --  /o  /\  |##|",
-        "    /\__/  \ |##|",
-        "    \__/    \|##|",
-        "             |##|",
-        "             |##|",
-        "             |##|",
-        "             |##|",
-        "              -- ",
+        "+====+         o ",
+        "|####|     __ /  ",
+        "|####|    /  X   ",
+        "|####|   (  ' )  ",
+        "|####|  / \__/   ",
+        "|####|\/o   /    ",
+        "|####|/    +====+",
+        "|####/o / /|####|",
+        "+===/o / X |####|",
+        "   /    / \|####|",
+        "  /\___/   |####|",
+        " (    /    |####|",
+        "  \__/     |####|",
+        "  / /      |####|",
+        " / /       +====+",
+        " `/              ",
     ]
-    title = "KeyHole",
-    subtitle = "Stand-alone Certificate Authority",
 
     def __init__(self, loop, conf, display):
         super().__init__(loop, conf, display)
@@ -39,22 +36,16 @@ class SplashScreen(Screen):
         self.display.set_status("Initializing")
 
     def set_theme(self):
-        self.loop.screen.register_palette(self.display.palette['space'])
+        self.loop.screen.register_palette(self.display.palette["space"])
 
     def build_logo(self):
         pile = []
         for line in self.logo:
             pile.append(urwid.Text(line, align="center"))
         pile.append(urwid.Text("", align="center"))
-
-        #pile.append(urwid.Text(self.title, align="center"))
+        pile.append(urwid.Text("", align="center"))
         pile.append(urwid.Text(self.conf["title"], align="center"))
-        # pile.append(urwid.Text("KeyHole", align="center"))
-
-        # pile.append(urwid.Text(self.subtitle, align="center"))
         pile.append(urwid.Text(self.conf["subtitle"], align="center"))
-        # pile.append(urwid.Text("Stand-alone Certificate Authority", align="center"))
-        
         pile.append(urwid.Text("", align="center"))
         pile.append(urwid.Text(self.conf["app_version"], align="center"))
         pile = urwid.Pile(pile)
