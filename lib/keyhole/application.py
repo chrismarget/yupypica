@@ -32,6 +32,8 @@ class Application(object):
             'footer':       ['white', 'dark blue'],
             'clock':        ['white', 'dark blue'],
             'status':       ['white', 'dark blue'],
+
+            'button':       ['white', 'dark blue'],
         },
 
         'pin_color_map': {

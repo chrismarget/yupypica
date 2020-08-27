@@ -1,4 +1,5 @@
 import urwid
+from urwid import AttrMap
 
 from .screen import Screen
 
@@ -7,13 +8,20 @@ class MainScreen(Screen):
         super().__init__(loop, conf, display)
 
     def set_contents(self):
-        buttons = ['a', 'b', 'c']
+        buttons = [
+            'Sign a Certificate',
+            'Examine a Certificate',
+            'Revoke a Certificate',
+            'Delete a Certificate',
+        ]
 
         items = []
         for button in buttons:
-            items.append(urwid.Button(button))
+            items.append(urwid.Divider(' '))
+            items.append(AttrMap(urwid.Button(button), 'button'))
         items = urwid.SimpleFocusListWalker(items)
         items = urwid.ListBox(items)
+        items = urwid.Padding(items, align='center', width=('relative', 50))
 
         self.display.set_body(items)
 
