@@ -19,16 +19,29 @@ class Application(object):
         "log_level": "warning",
         "clock_format": "%Y-%m-%d %H:%M:%S %Z",
         "clock_timezone": "utc",
-        "theme": {
-            # name:         [foreground, background]
-            "background": ["white", "light gray"],
-            "logo": ["dark blue", "light gray"],
-            "header": ["white", "light blue"],
-            "app_name": ["white", "light blue"],
-            "screen_name": ["white", "dark blue"],
-            "footer": ["white", "dark blue"],
-            "clock": ["white", "dark blue"],
-            "status": ["white", "dark blue"],
+        "title": "KeyHole",
+        "subtitle": "Stand-alone Certificate Authority",
+        "themes": {
+            "main": {
+                "background":  ["white", "light gray"],
+                "logo":        ["dark blue", "light gray"],
+                "header":      ["white", "light blue"],
+                "app_name":    ["white", "light blue"],
+                "screen_name": ["white", "dark blue"],
+                "footer":      ["white", "dark blue"],
+                "clock":       ["white", "dark blue"],
+                "status":      ["white", "dark blue"],
+            },
+            "space": {
+                "background":  ["black", "black"],
+                "logo":        ["white", "black"],
+                "header":      ["black", "black"],
+                "app_name":    ["black", "black"],
+                "screen_name": ["black", "black"],
+                "footer":      ["black", "black"],
+                "clock":       ["black", "black"],
+                "status":      ["black", "black"],
+            }
         },
         "pin_color_map": {17: "#070", 22: "#44f", 23: "#770", 27: "#700",},
     }
@@ -86,7 +99,7 @@ class Application(object):
         # ...
 
         # Switch to main menu after short time
-        self.loop.set_alarm_in(1, self.main_screen.activate)
+        self.loop.set_alarm_in(5, self.main_screen.activate)
 
         # Start the reactor
         self.loop.run()

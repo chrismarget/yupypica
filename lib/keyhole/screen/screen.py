@@ -14,6 +14,7 @@ class Screen(object):
         self.set_contents()
         self.set_status()
         self.set_keys()
+        self.set_theme()
 
     def set_screen_name(self):
         pass
@@ -26,3 +27,6 @@ class Screen(object):
 
     def set_keys(self):
         pass
+
+    def set_theme(self):
+        self.loop.screen.register_palette(self.display.palette['main'])
