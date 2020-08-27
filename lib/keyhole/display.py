@@ -12,7 +12,7 @@ def theme_to_palette(theme):
 
 
 class Display(object):
-    palette = []
+    palette = {}
     button_count = 0
     last = 0
 
@@ -20,11 +20,11 @@ class Display(object):
         self.loop = loop
         self.conf = conf
 
-        self.palette = theme_to_palette(self.conf.get("theme", {}))
+        themes = self.conf.get("themes", {})
+        for t in themes:
+            self.palette[t] = theme_to_palette(themes[t])
 
         loop.screen.set_terminal_properties(colors=88)
-        # NOTE: Add extr palette entries here
-        loop.screen.register_palette(self.palette)
 
         header = self._init_header()
         footer = self._init_footer()
