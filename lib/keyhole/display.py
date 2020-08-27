@@ -4,6 +4,13 @@ import time
 from urwid import ExitMainLoop, AttrMap, Columns, Filler, Frame, Text, Padding
 
 
+def theme_to_palette(theme):
+    palette = []
+    for name, colors in theme.items():
+        palette.append((name, "", "", "", *colors))
+    return palette
+
+
 class Display(object):
     palette = []
     button_count = 0
@@ -13,7 +20,7 @@ class Display(object):
         self.loop = loop
         self.conf = conf
 
-        self.palette = self.theme_to_palette()
+        self.palette = theme_to_palette(self.conf.get("theme", {}))
 
         loop.screen.set_terminal_properties(colors=88)
         # NOTE: Add extr palette entries here
@@ -26,13 +33,6 @@ class Display(object):
 
     def activate(self):
         self.loop.widget = AttrMap(self.frame, "background")
-
-    def theme_to_palette(self):
-        theme = self.conf.get("theme", {})
-        palette = []
-        for name, colors in theme.items():
-            palette.append((name, "", "", "", *colors))
-        return palette
 
     def unhandled_input(self, key):
         raise ExitMainLoop()
