@@ -19,6 +19,8 @@ class Application(object):
         "log_level": "warning",
         "clock_format": "%Y-%m-%d %H:%M:%S %Z",
         "clock_timezone": "utc",
+        "title": "KeyHole",
+        "subtitle": "Stand-alone Certificate Authority",
         "themes": {
             "main": {
                 "background":  ["white", "light gray"],
