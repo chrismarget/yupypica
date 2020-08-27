@@ -45,9 +45,12 @@ class SplashScreen(Screen):
         pile = []
         for line in self.logo:
             pile.append(urwid.Text(line, align="center"))
-        pile.append("")
-        pile.append(self.title)
-        pile.append(self.subtitle)
+        pile.append(urwid.Text("", align="center"))
+        #pile.append(urwid.Text(self.title, align="center"))
+        pile.append(urwid.Text("KeyHole", align="center"))
+        # pile.append(urwid.Text(self.subtitle, align="center"))
+        pile.append(urwid.Text("Stand-alone Certificate Authority", align="center"))
+        pile.append(urwid.Text("", align="center"))
         pile.append(urwid.Text(self.conf["app_version"], align="center"))
         pile = urwid.Pile(pile)
         pile = urwid.Filler(pile)
