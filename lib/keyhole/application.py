@@ -112,8 +112,6 @@ class Application(object):
             return True
 
         # TODO: These should be ignored here
-        # if key in '1qaz':
-        #     self.display.set_status("Got %s key" % key)
         self.display.set_status("Got key %s" % key)
         return True
 
