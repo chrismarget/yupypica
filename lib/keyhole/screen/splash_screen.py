@@ -23,6 +23,32 @@ class SplashScreen(Screen):
         " `/              ",
     ]
 
+    constellation = [
+        "                                        ",
+        "                                        ",
+        "                                        ",
+        "                                        ",
+        "                                        ",
+        "                                        ",
+        "                                        ",
+        "      o                                 ",
+        "            *                           ",
+        "                                        ",
+        "                                        ",
+        "                .                       ",
+        "                                        ",
+        "                                        ",
+        "                    *                   ",
+        "                                        ",
+        "                                        ",
+        "                             o          ",
+        "                    o                   ",
+        "                                        ",
+        "                          .             ",
+        "                                        ",
+        "                                        ",
+    ]
+
     def __init__(self, loop, conf, display):
         super().__init__(loop, conf, display)
 
@@ -30,7 +56,7 @@ class SplashScreen(Screen):
         self.display.set_screen_name("Welcome")
 
     def set_contents(self):
-        self.display.set_body(self.build_logo())
+        self.display.set_body(self.build_logo(self.constellation))
 
     def set_status(self):
         self.display.set_status("Initializing")
@@ -38,9 +64,9 @@ class SplashScreen(Screen):
     def set_theme(self):
         self.loop.screen.register_palette(self.display.palette["space"])
 
-    def build_logo(self):
+    def build_logo(self, lines):
         pile = []
-        for line in self.logo:
+        for line in lines:
             pile.append(urwid.Text(line, align="center"))
         pile.append(urwid.Text("", align="center"))
         pile.append(urwid.Text("", align="center"))
