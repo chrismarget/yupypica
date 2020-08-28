@@ -47,9 +47,10 @@ class Application(object):
         "pin_color_map": {17: "#070", 22: "#44f", 23: "#770", 27: "#700",},
     }
 
-    def __init__(self):
 
-        # Start logger early (use default_conf's value temporarily and update it later)
+    def __init__(self):
+        # Start logger early (use default_conf's value temporarily,
+        # and update it later)
         self.log = saturnv.Logger()
         self.log.set_level(self.default_conf["log_level"])
         self.log.stderr_off()  # don't disturb screen layout
@@ -57,7 +58,8 @@ class Application(object):
         # Parse command line arguments, and get the app configuration
         self.options = Options(self)
         self.args = self.options.get_args()
-        self.conf = saturnv.AppConf(defaults=Application.default_conf, args=self.args)
+        self.conf = saturnv.AppConf(defaults=Application.default_conf,
+                args=self.args)
         self.conf["app_version"] = get_version()
 
         # Finalize log level from fully-loaded config
@@ -71,10 +73,12 @@ class Application(object):
             unhandled_input=self.unhandled_input,
         )
 
+        # Collate themes into runtime configuration layer
+        self.conf['themes'] = self.conf.merge_dicts('themes')
+
         # Prepare button-to-keyboard linkage
         if is_pi() and os.geteuid() == 0:
             from .buttons import Buttons
-
             self.buttons = Buttons(self.loop, list(self.conf["pin_color_map"]))
 
         # Prep Display but don't activate it yet. Prep starting screens.
