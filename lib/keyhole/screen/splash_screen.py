@@ -61,7 +61,6 @@ class SplashScreen(Screen):
         for line in lines:
             pile.append(urwid.Text(line, align="center"))
         pile.append(urwid.Text("", align="center"))
-        pile.append(urwid.Text("", align="center"))
         pile.append(urwid.Text(self.conf["title"], align="center"))
         pile.append(urwid.Text(self.conf["subtitle"], align="center"))
         pile.append(urwid.Text("", align="center"))
