@@ -110,7 +110,7 @@ class Application(object):
 
     def unhandled_input(self, key):
         # Out-of-band controls
-        if key == "esc":  # Exit the program
+        if key in ["esc", 'q', 'Q']:  # Exit the program
             raise ExitMainLoop()
         if key == "ctrl l":  # Refresh overwritten/corrupted screen
             self.loop.screen.clear()
