@@ -13,6 +13,7 @@ def theme_to_palette(theme):
 
 class Display(object):
     palette = {}
+    button_palette =[]
     button_count = 0
     last = 0
 
@@ -22,7 +23,7 @@ class Display(object):
 
         themes = self.conf.get("themes", {})
         for t in themes:
-            self.palette[t] = theme_to_palette(themes[t])
+            self.palette[t] = theme_to_palette(themes[t]) + self.button_palette
 
         loop.screen.set_terminal_properties(colors=88)
 
@@ -37,9 +38,12 @@ class Display(object):
     def unhandled_input(self, key):
         raise ExitMainLoop()
 
-    def add_button(self, button):
-        self.palette.append((self.button_count, "", "", "", "black", button.color))
-        self.button_count += 1
+    # def add_button(self, button):
+    #     self.palette.append((self.button_count, "", "", "", "black", button.color))
+    #     self.button_count += 1
+
+    def init_button_palette(self, key_color_map):
+        self.button_palette = theme_to_palette(key_color_map)
 
     def _init_header(self):
         self.app_name = Text(self.conf["app_name"], align="right")

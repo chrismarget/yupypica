@@ -44,7 +44,12 @@ class Application(object):
                 "status":      ["dark gray", "black"],
             }
         },
-        "pin_color_map": {17: "#070", 22: "#44f", 23: "#770", 27: "#700",},
+        "pin_color_map": {
+            17: ("#fff", "#070"),
+            22: ("#fff", "#44f"),
+            23: ("#fff", "#770"),
+            27: ("#fff", "#700"),
+        },
     }
 
 
@@ -81,8 +86,20 @@ class Application(object):
             from .buttons import Buttons
             self.buttons = Buttons(self.loop, list(self.conf["pin_color_map"]))
 
+        # Prepare a map of {key: (text_color, bg_color)} using whatever
+        # keystrokes have become associated with each button. No bounds
+        # checking here b/c the key count and color count are guaranteed
+        # to match.
+        key_color_map = dict(
+            zip(
+                [x.key for x in self.buttons.buttons],
+                self.conf["pin_color_map"].values()
+            )
+        )
+
         # Prep Display but don't activate it yet. Prep starting screens.
         self.display = Display(self.loop, self.conf)
+        self.display.init_button_palette(key_color_map)
         self.splash_screen = SplashScreen(self.loop, self.conf, self.display)
         self.main_screen = MainScreen(self.loop, self.conf, self.display)
 
