@@ -52,6 +52,6 @@ def get_overlay_substring(under: str, over: str, idx=0) -> str:
 
 
 def overlay(under: str, over: str, transparent="", pos=0) -> str:
-    pos2 = max(0, pos-len(over))
+    pos2 = max(0, pos-len(over) + 1)
     over = get_overlay_substring(under, over, pos)
     return string_on_string_at_pos_with_transparency(under, over, transparent, pos2)
