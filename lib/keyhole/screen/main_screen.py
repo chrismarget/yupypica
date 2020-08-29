@@ -7,7 +7,6 @@ from .screen import Screen
 class MainScreen(Screen):
     def __init__(self, loop, conf, display):
         super().__init__(loop, conf, display)
-        self.outF = open("/tmp/out.txt", "w")
 
     def set_contents(self):
         buttons = {
@@ -34,8 +33,4 @@ class MainScreen(Screen):
         self.display.set_status("")
 
     def set_theme(self):
-        self.outF.write("set theme\n")
-        self.outF.write(str(self.display.palette['main']))
-        self.outF.write("\n")
-        self.outF.close()
         self.loop.screen.register_palette(self.display.palette['main'])
