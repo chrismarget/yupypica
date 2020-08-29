@@ -7,19 +7,20 @@ from .screen import Screen
 class MainScreen(Screen):
     def __init__(self, loop, conf, display):
         super().__init__(loop, conf, display)
+        self.outF = open("/tmp/out.txt", "w")
 
     def set_contents(self):
-        buttons = [
-            'Sign a Certificate',
-            'Examine a Certificate',
-            'Revoke a Certificate',
-            'Delete a Certificate',
-        ]
+        buttons = {
+            "f13": 'Sign a Certificate',
+            "f14": 'Examine a Certificate',
+            "f15": 'Revoke a Certificate',
+            "f16": 'Delete a Certificate',
+        }
 
         items = []
-        for button in buttons:
+        for key in buttons:
             items.append(urwid.Divider(' '))
-            items.append(AttrMap(urwid.Button(button), 'button'))
+            items.append(AttrMap(urwid.Button(buttons[key]), key))
         items = urwid.SimpleFocusListWalker(items)
         items = urwid.ListBox(items)
         items = urwid.Padding(items, align='center', width=('relative', 50))
@@ -31,3 +32,10 @@ class MainScreen(Screen):
 
     def set_status(self):
         self.display.set_status("")
+
+    def set_theme(self):
+        self.outF.write("set theme\n")
+        self.outF.write(str(self.display.palette['main']))
+        self.outF.write("\n")
+        self.outF.close()
+        self.loop.screen.register_palette(self.display.palette['main'])
