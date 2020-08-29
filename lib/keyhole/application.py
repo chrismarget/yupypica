@@ -81,25 +81,29 @@ class Application(object):
         # Collate themes into runtime configuration layer
         self.conf['themes'] = self.conf.merge_dicts('themes')
 
+        # Prep Display but don't activate it yet. Prep starting screens.
+        self.display = Display(self.loop, self.conf)
+
         # Prepare button-to-keyboard linkage
         if is_pi() and os.geteuid() == 0:
             from .buttons import Buttons
             self.buttons = Buttons(self.loop, list(self.conf["pin_color_map"]))
 
-        # Prepare a map of {key: (text_color, bg_color)} using whatever
-        # keystrokes have become associated with each button. No bounds
-        # checking here b/c the key count and color count are guaranteed
-        # to match.
-        key_color_map = dict(
-            zip(
-                [x.key for x in self.buttons.buttons],
-                self.conf["pin_color_map"].values()
+            # Add colors associated with each button to all themes. Palette
+            # entries within each theme are named according to the keystrokes
+            # (f13...) which have become associated with each button. No bounds
+            # checking here b/c the key count and color count are guaranteed
+            # to match.
+            self.display.init_button_palette(
+                dict(
+                    zip(
+                        [x.key for x in self.buttons.buttons],
+                        self.conf["pin_color_map"].values()
+                    )
+                )
             )
-        )
 
-        # Prep Display but don't activate it yet. Prep starting screens.
-        self.display = Display(self.loop, self.conf)
-        self.display.init_button_palette(key_color_map)
+
         self.splash_screen = SplashScreen(self.loop, self.conf, self.display)
         self.main_screen = MainScreen(self.loop, self.conf, self.display)
 
